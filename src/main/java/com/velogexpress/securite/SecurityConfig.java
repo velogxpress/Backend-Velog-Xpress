@@ -170,8 +170,8 @@ public class SecurityConfig {
         configuration.setAllowedOrigins(List.of(
                 "https://velogxpress.com",
                 "https://www.velogxpress.com",
+                "https://frontend-velog-xpress-production.up.railway.app",
                 "http://localhost:3000"
-
         ));
 
         configuration.setAllowedMethods(List.of(
