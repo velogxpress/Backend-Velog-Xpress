@@ -7,6 +7,8 @@ import com.velogexpress.service.OrderDetailsService;
 import com.velogexpress.service.PdfService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -25,6 +27,8 @@ import java.util.List;
 @RequestMapping("/api/orderdetails")
 @RequiredArgsConstructor
 public class OrderDetailsController {
+
+    private static final Logger log = LoggerFactory.getLogger(OrderDetailsController.class);
 
     private final OrderDetailsService orderDetailsService;
     private final FactureService factureService;
@@ -235,8 +239,10 @@ public class OrderDetailsController {
                     .body(pdfBytes);
 
         } catch (Exception e) {
-            return ResponseEntity.internalServerError().build();
-
+            log.error("clentfacturedownload failed for usercode={}, search={}", usercode, search, e);
+            e.printStackTrace();
+            return ResponseEntity.internalServerError()
+                    .body(("Erreur facture: " + e.getMessage()).getBytes());
         }
     }
 

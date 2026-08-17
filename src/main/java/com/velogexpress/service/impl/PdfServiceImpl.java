@@ -36,6 +36,8 @@ import com.velogexpress.tools.DecimalFormat;
 import com.velogexpress.tools.Variables;
 import lombok.AllArgsConstructor;
 import lombok.RequiredArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.ClassPathResource;
@@ -58,6 +60,8 @@ import java.util.function.Supplier;
 @Service
 @RequiredArgsConstructor
 public class PdfServiceImpl implements PdfService {
+
+    private static final Logger log = LoggerFactory.getLogger(PdfServiceImpl.class);
 
     private static final DateTimeFormatter FRENCH_DATE_TIME_FORMATTER =
             DateTimeFormatter.ofPattern("dd/MM/yyyy hh:mm a", Locale.FRENCH);
@@ -283,7 +287,10 @@ public class PdfServiceImpl implements PdfService {
             if (mainaddress.isPresent()) {
                  addr = mainaddress.get();
             }
-            assert addr != null;
+            if (addr == null) {
+                log.error("clientFactureDownload: no Mainaddress row with id=1 found");
+                throw new IllegalStateException("Mainaddress (id=1) introuvable dans la base de donnees");
+            }
             document.add(new Paragraph(addr.getAddressline()+", "+addr.getCity()+", "+addr.getState()+" "+addr.getZipcode()).setFont(fontBold).setFontSize(10).setTextAlignment(TextAlignment.CENTER));
             document.add(new Paragraph(addr.getPhone()+" | info@velogxpress.com").setFont(fontBold).setFontSize(10).setTextAlignment(TextAlignment.CENTER));
             document.add(new Paragraph("___________________________________________________________________").setTextAlignment(TextAlignment.CENTER));
@@ -291,9 +298,20 @@ public class PdfServiceImpl implements PdfService {
             document.add(new Paragraph("___________________________________________________________________").setTextAlignment(TextAlignment.CENTER));
             document.add(new Paragraph(""));
             List<OrderDetails> orderDetails =orderDetailsRepository.getOrderDetailFactureByClient(usercode,order);
+            if (orderDetails == null || orderDetails.isEmpty()) {
+                log.error("clientFactureDownload: no order details found for usercode={}, order={}", usercode, order);
+                throw new IllegalStateException(
+                        "Aucune commande trouvee pour usercode=" + usercode + " et order=" + order
+                                + " (verifier que les donnees ont ete migrees vers la nouvelle base MySQL)");
+            }
+            Taux taux = tauxRepository.findByDevise("Dollars US");
+            if (taux == null) {
+                log.error("clientFactureDownload: taux 'Dollars US' not found in database");
+                throw new IllegalStateException("Taux 'Dollars US' introuvable dans la table taux");
+            }
             double pwa = 0;
             double tot = 0;
-            double to=tauxRepository.findByDevise("Dollars US").getSale();
+            double to = taux.getSale();
             for (OrderDetails orderDetail : orderDetails) {
                 pwa += orderDetail.getPounds();
                 tot += orderDetail.getSubtotal();
