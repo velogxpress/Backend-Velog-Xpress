@@ -1,5 +1,8 @@
 package com.velogexpress.controller;
 
+import org.springframework.cache.annotation.Cacheable;
+import org.springframework.cache.annotation.CacheEvict;
+
 import com.velogexpress.model.VilleModel;
 import com.velogexpress.service.VilleService;
 import lombok.AllArgsConstructor;
@@ -19,6 +22,7 @@ public class VilleController {
     private final VilleService villeService;
 
     // ✅ Create Ville
+    @CacheEvict(cacheNames = "ville", allEntries = true)
     @PostMapping
     public ResponseEntity<VilleModel> createVille(@Valid @RequestBody VilleModel villeModel) {
         VilleModel savedVille = villeService.createVille(villeModel);
@@ -26,6 +30,7 @@ public class VilleController {
     }
 
     // ✅ Get all Villes
+    @Cacheable(cacheNames = "ville")
     @GetMapping
     public ResponseEntity<Page<VilleModel>> getAllVille(
             @RequestParam(defaultValue = "0") int page,
@@ -37,6 +42,7 @@ public class VilleController {
 
 
     // ✅ Get Villes by Region (with pagination)
+    @Cacheable(cacheNames = "ville")
     @GetMapping("/region/{region}")
     public ResponseEntity<Page<VilleModel>> getAllVilleByRegion(
             @PathVariable Long region,
@@ -48,6 +54,7 @@ public class VilleController {
     }
 
     // ✅ Get Ville by ID
+    @Cacheable(cacheNames = "ville")
     @GetMapping("/{id}")
     public ResponseEntity<VilleModel> getVilleById(@PathVariable Long id) {
         VilleModel villeModel = villeService.getVilleByID(id);
@@ -55,6 +62,7 @@ public class VilleController {
     }
 
     // ✅ Update Ville
+    @CacheEvict(cacheNames = "ville", allEntries = true)
     @PutMapping("/{id}")
     public ResponseEntity<VilleModel> updateVille(@PathVariable Long id, @Valid @RequestBody VilleModel villeModel) {
         VilleModel updatedVille = villeService.updateVille(id, villeModel);
@@ -62,6 +70,7 @@ public class VilleController {
     }
 
     // ✅ Delete Ville
+    @CacheEvict(cacheNames = "ville", allEntries = true)
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteVille(@PathVariable Long id) {
         villeService.deleteVille(id);

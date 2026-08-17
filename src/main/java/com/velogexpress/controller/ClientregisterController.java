@@ -1,5 +1,8 @@
 package com.velogexpress.controller;
 
+import org.springframework.cache.annotation.Cacheable;
+import org.springframework.cache.annotation.CacheEvict;
+
 import com.velogexpress.model.ClientregisterModel;
 import com.velogexpress.model.RegisterModel;
 import com.velogexpress.service.ClientregisterService;
@@ -22,6 +25,7 @@ public class ClientregisterController {
     private final ClientregisterService clientregisterService;
 
     // Create Client User
+    @CacheEvict(cacheNames = "clientregister", allEntries = true)
     @PostMapping
     public ResponseEntity<ClientregisterModel> createClientUser(@RequestBody ClientregisterModel clientregisterModel) {
         ClientregisterModel savedModel = clientregisterService.createUser(clientregisterModel);
@@ -29,6 +33,7 @@ public class ClientregisterController {
     }
 
     // Create Client User
+    @CacheEvict(cacheNames = "clientregister", allEntries = true)
     @PostMapping("/newutilisateur")
     public ResponseEntity<ClientregisterModel> createutilisateur(@RequestBody ClientregisterModel clientregisterModel) {
         ClientregisterModel savedModel = clientregisterService.createUtilisateur(clientregisterModel);
@@ -36,6 +41,7 @@ public class ClientregisterController {
     }
 
     // Get All Clientregister
+    @Cacheable(cacheNames = "clientregister")
     @GetMapping
     public ResponseEntity<Page<ClientregisterModel>> getAllClientregister(
             @RequestParam(defaultValue = "0") int page,
@@ -47,6 +53,7 @@ public class ClientregisterController {
     }
 
     // Get Clientregister by Usercode
+    @Cacheable(cacheNames = "clientregister")
     @GetMapping("/{usercode}")
     public ResponseEntity<ClientregisterModel> getClientregisterByUsercode(
             @PathVariable("usercode") String code
@@ -58,6 +65,7 @@ public class ClientregisterController {
 
 
     // Update Clientregister
+    @CacheEvict(cacheNames = "clientregister", allEntries = true)
     @PutMapping("/{usercode}")
     public ResponseEntity<ClientregisterModel> updateClientregister(
             @PathVariable("usercode") String code,
@@ -69,6 +77,7 @@ public class ClientregisterController {
     }
 
     // Count Clients by user
+    @Cacheable(cacheNames = "clientregister")
     @GetMapping("/clientcounter/{user}")
     public ResponseEntity<Long> getCountClient(
             @PathVariable("user") String user,
@@ -82,6 +91,7 @@ public class ClientregisterController {
 
 
     // Get all Agents
+    @Cacheable(cacheNames = "clientregister")
     @GetMapping("/user")
     public ResponseEntity<Page<ClientregisterModel>> getAllAgents(
             @RequestParam(defaultValue = "0") int page,
@@ -93,6 +103,7 @@ public class ClientregisterController {
     }
 
     // Get Agent by Usercode
+    @Cacheable(cacheNames = "clientregister")
     @GetMapping("/user/{usercode}")
     public ResponseEntity<Page<ClientregisterModel>> getAgentByUsercode(
             @PathVariable("usercode") String code,
@@ -104,30 +115,35 @@ public class ClientregisterController {
         return ResponseEntity.ok(agent);
     }
 
+    @Cacheable(cacheNames = "clientregister")
     @GetMapping("/countclient")
     public ResponseEntity<Long> getCountClient() {
         Long client=clientregisterService.countClient();
         return ResponseEntity.ok(client);
     }
 
+    @Cacheable(cacheNames = "clientregister")
     @GetMapping("/countclientcity")
     public ResponseEntity<List> getCountClientCity() {
         List<ClientregisterModel> client=clientregisterService.getCountGraphe();
         return ResponseEntity.ok(client);
     }
 
+    @CacheEvict(cacheNames = "clientregister", allEntries = true)
     @PutMapping("/edituser/{id}")
     public ResponseEntity<ClientregisterModel> editUser(@PathVariable("id") String id,@RequestBody ClientregisterModel clientregisterModel) {
         ClientregisterModel client=clientregisterService.EditUserInfo(id, clientregisterModel);
         return ResponseEntity.ok(client);
     }
 
+    @CacheEvict(cacheNames = "clientregister", allEntries = true)
     @DeleteMapping("/deleteuser/{id}")
     public ResponseEntity<String> deleteUser(@PathVariable("id") String id) {
         clientregisterService.deleteUser(id);
         return ResponseEntity.ok("Utilisateur supprimer avec succes.");
     }
 
+    @Cacheable(cacheNames = "clientregister")
     @GetMapping("/existuser/{email}")
     public ResponseEntity<String> getXeExistsmail(@PathVariable("email") String email) {
         String valor=clientregisterService.findExistEmail(email);

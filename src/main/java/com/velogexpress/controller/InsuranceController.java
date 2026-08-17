@@ -1,5 +1,8 @@
 package com.velogexpress.controller;
 
+import org.springframework.cache.annotation.Cacheable;
+import org.springframework.cache.annotation.CacheEvict;
+
 import com.velogexpress.model.InsuranceModel;
 import com.velogexpress.service.InsuranceService;
 import lombok.AllArgsConstructor;
@@ -17,12 +20,14 @@ public class InsuranceController {
 
     private final InsuranceService insuranceService;
 
+    @CacheEvict(cacheNames = "insurance", allEntries = true)
     @PostMapping
     public ResponseEntity<InsuranceModel> createInsurance(@RequestBody InsuranceModel insuranceModel) {
         InsuranceModel created = insuranceService.createInsurance(insuranceModel);
         return new ResponseEntity<>(created, HttpStatus.CREATED);
     }
 
+    @Cacheable(cacheNames = "insurance")
     @GetMapping
     public ResponseEntity<Page<InsuranceModel>> getAllInsurance(
             @RequestParam(defaultValue = "0") int page,
@@ -31,12 +36,14 @@ public class InsuranceController {
         return ResponseEntity.ok(result);
     }
 
+    @Cacheable(cacheNames = "insurance")
     @GetMapping("/{id}")
     public ResponseEntity<InsuranceModel> getInsuranceById(@PathVariable("id") Long id) {
         InsuranceModel model = insuranceService.getInsuranceById(id);
         return ResponseEntity.ok(model);
     }
 
+    @Cacheable(cacheNames = "insurance")
     @GetMapping("/by-amount")
     public ResponseEntity<Page<InsuranceModel>> getInsuranceByAmount(
             @RequestParam("amount") Double amount,
@@ -46,6 +53,7 @@ public class InsuranceController {
         return ResponseEntity.ok(pageResult);
     }
 
+    @CacheEvict(cacheNames = "insurance", allEntries = true)
     @PutMapping("/{id}")
     public ResponseEntity<InsuranceModel> updateInsurance(
             @PathVariable("id") Long id,
@@ -54,6 +62,7 @@ public class InsuranceController {
         return ResponseEntity.ok(updated);
     }
 
+    @CacheEvict(cacheNames = "insurance", allEntries = true)
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteInsurance(@PathVariable("id") Long id) {
         insuranceService.deleteInsurance(id);

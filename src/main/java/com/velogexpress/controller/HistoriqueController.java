@@ -1,5 +1,8 @@
 package com.velogexpress.controller;
 
+import org.springframework.cache.annotation.Cacheable;
+import org.springframework.cache.annotation.CacheEvict;
+
 import com.velogexpress.model.HistoriqueModel;
 import com.velogexpress.service.HistoriqueService;
 import lombok.AllArgsConstructor;
@@ -18,12 +21,14 @@ public class HistoriqueController {
 
     private final HistoriqueService historiqueService;
 
+    @CacheEvict(cacheNames = "historique", allEntries = true)
     @PostMapping
     public ResponseEntity<HistoriqueModel> createHistorique(@RequestBody HistoriqueModel model) {
         HistoriqueModel created = historiqueService.createHistorique(model);
         return ResponseEntity.status(HttpStatus.CREATED).body(created);
     }
 
+    @Cacheable(cacheNames = "historique")
     @GetMapping
     public ResponseEntity<Page<HistoriqueModel>> getAllHistorique(
             @RequestParam(defaultValue = "0") int page,
@@ -35,18 +40,21 @@ public class HistoriqueController {
         return ResponseEntity.ok(historiquePage);
     }
 
+    @Cacheable(cacheNames = "historique")
     @GetMapping("/user/{user}")
     public ResponseEntity<HistoriqueModel> getLatestHistoriqueByUser(@PathVariable String user) {
         HistoriqueModel model = historiqueService.getLatestHistoriqueByUser(user);
         return ResponseEntity.ok(model);
     }
 
+    @CacheEvict(cacheNames = "historique", allEntries = true)
     @PutMapping("/logout/{user}")
     public ResponseEntity<HistoriqueModel> logoutUser(@PathVariable String user) {
         HistoriqueModel model = historiqueService.updateLogoutTime(user);
         return ResponseEntity.ok(model);
     }
 
+    @Cacheable(cacheNames = "historique")
     @GetMapping("/search")
     public ResponseEntity<Page<HistoriqueModel>> searchHistorique(
             @RequestParam String user,

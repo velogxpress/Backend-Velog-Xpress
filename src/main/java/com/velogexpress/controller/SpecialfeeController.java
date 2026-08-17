@@ -1,5 +1,8 @@
 package com.velogexpress.controller;
 
+import org.springframework.cache.annotation.Cacheable;
+import org.springframework.cache.annotation.CacheEvict;
+
 import com.velogexpress.model.SpecialfeeModel;
 import com.velogexpress.service.SpecialfeeService;
 import lombok.AllArgsConstructor;
@@ -18,6 +21,7 @@ public class SpecialfeeController {
     private final SpecialfeeService specialfeeService;
 
     // Create Special Fee
+    @CacheEvict(cacheNames = "specialfee", allEntries = true)
     @PostMapping
     public ResponseEntity<SpecialfeeModel> createSpecialfee(@RequestBody SpecialfeeModel specialfeeModel) {
         SpecialfeeModel created = specialfeeService.createSpecialfee(specialfeeModel);
@@ -25,6 +29,7 @@ public class SpecialfeeController {
     }
 
     // Get All Special Fees
+    @Cacheable(cacheNames = "specialfee")
     @GetMapping
     public ResponseEntity<Page<SpecialfeeModel>> getAllSpecialfees(
             @RequestParam(defaultValue = "0") int page,
@@ -35,6 +40,7 @@ public class SpecialfeeController {
     }
 
     // Get Special Fee by ID
+    @Cacheable(cacheNames = "specialfee")
     @GetMapping("/{id}")
     public ResponseEntity<SpecialfeeModel> getSpecialfeeById(@PathVariable("id") Long id) {
         SpecialfeeModel model = specialfeeService.getSpecialfeeById(id);
@@ -42,6 +48,7 @@ public class SpecialfeeController {
     }
 
     // Get Special Fee by Amount
+    @Cacheable(cacheNames = "specialfee")
     @GetMapping("/by-amount")
     public ResponseEntity<Page<SpecialfeeModel>> getSpecialfeeByAmount(
             @RequestParam("amount") Double amount,
@@ -53,6 +60,7 @@ public class SpecialfeeController {
     }
 
     // Update Special Fee
+    @CacheEvict(cacheNames = "specialfee", allEntries = true)
     @PutMapping("/{id}")
     public ResponseEntity<SpecialfeeModel> updateSpecialfee(
             @PathVariable("id") Long id,
@@ -63,6 +71,7 @@ public class SpecialfeeController {
     }
 
     // Delete Special Fee
+    @CacheEvict(cacheNames = "specialfee", allEntries = true)
     @DeleteMapping("/{id}")
     public ResponseEntity<String> deleteSpecialfee(@PathVariable("id") Long id) {
         specialfeeService.deleteSpecialfee(id);

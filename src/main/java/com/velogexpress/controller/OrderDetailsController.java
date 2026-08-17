@@ -1,5 +1,8 @@
 package com.velogexpress.controller;
 
+import org.springframework.cache.annotation.Cacheable;
+import org.springframework.cache.annotation.CacheEvict;
+
 import com.velogexpress.model.FactureModel;
 import com.velogexpress.model.OrderDetailsModel;
 import com.velogexpress.service.FactureService;
@@ -36,6 +39,7 @@ public class OrderDetailsController {
 
     // ---------------- BASIC CRUD ----------------
 
+    @CacheEvict(cacheNames = "orderDetails", allEntries = true)
     @PostMapping(
             value = "/save-colis",
             consumes = MediaType.MULTIPART_FORM_DATA_VALUE
@@ -49,6 +53,7 @@ public class OrderDetailsController {
         return ResponseEntity.status(HttpStatus.CREATED).body(saved);
     }
 
+    @Cacheable(cacheNames = "orderDetails")
     @GetMapping
     public Page<OrderDetailsModel> getOrders(
             @RequestParam(defaultValue = "0") int page,
@@ -63,6 +68,7 @@ public class OrderDetailsController {
         return orderDetailsService.getAllDetails(pageable);
     }
 
+    @Cacheable(cacheNames = "orderDetails")
     @GetMapping("/alldetails/{param}")
     public ResponseEntity<Page<OrderDetailsModel>> getAllOrderDetails(
         @PathVariable String param,
@@ -72,6 +78,7 @@ public class OrderDetailsController {
             return ResponseEntity.ok(orderDetailsService.getAllOrderDetails(param,pageable));
     }
 
+    @Cacheable(cacheNames = "orderDetails")
     @GetMapping("/etendu")
     public ResponseEntity<Page<OrderDetailsModel>> getAllOrderDetailsSearch(
             @RequestParam(defaultValue = "0") int page,
@@ -79,6 +86,7 @@ public class OrderDetailsController {
         return ResponseEntity.ok(orderDetailsService.getAllDetailsSearch(PageRequest.of(page, size)));
     }
 
+    @Cacheable(cacheNames = "orderDetails")
     @GetMapping("/searchetendu/{param}")
     public ResponseEntity<Page<OrderDetailsModel>> getAllOrderDetailsSearch(
             @PathVariable String param,
@@ -87,12 +95,14 @@ public class OrderDetailsController {
         return ResponseEntity.ok(orderDetailsService.searchAllDetails(param,PageRequest.of(page, size)));
     }
 
+    @Cacheable(cacheNames = "orderDetails")
     @GetMapping("/{upc}")
     public ResponseEntity<OrderDetailsModel> getDetailsByUpc(@PathVariable String upc) {
         OrderDetailsModel model = orderDetailsService.getDetailsByUPC(upc);
         return model != null ? ResponseEntity.ok(model) : ResponseEntity.notFound().build();
     }
 
+    @CacheEvict(cacheNames = "orderDetails", allEntries = true)
     @PutMapping("/{upc}")
     public ResponseEntity<String> updateDetails(
             @PathVariable String upc,@RequestParam Long cityID) {
@@ -100,6 +110,7 @@ public class OrderDetailsController {
         return updated != null ? ResponseEntity.ok(updated) : ResponseEntity.notFound().build();
     }
 
+    @CacheEvict(cacheNames = "orderDetails", allEntries = true)
     @DeleteMapping("/{upc}")
     public ResponseEntity<String> deleteDetails(@PathVariable String upc) {
         orderDetailsService.deleteDetails(upc);
@@ -108,6 +119,7 @@ public class OrderDetailsController {
 
     // ---------------- SHIPPING ----------------
 
+    @Cacheable(cacheNames = "orderDetails")
     @GetMapping("/ship/{upc}")
     public ResponseEntity<Page<OrderDetailsModel>> getDetailsByShipOrder(
             @PathVariable String upc,
@@ -116,12 +128,14 @@ public class OrderDetailsController {
         return ResponseEntity.ok(orderDetailsService.getByShipOrder(upc, PageRequest.of(page, size)));
     }
 
+    @Cacheable(cacheNames = "orderDetails")
     @GetMapping("/ships/{upc}")
     public ResponseEntity<List<OrderDetailsModel>> getDetailsByShipOrder(@PathVariable String upc) {
         return ResponseEntity.ok(orderDetailsService.getByShipOrder(upc));
     }
 
 
+    @Cacheable(cacheNames = "orderDetails")
     @GetMapping("/ship/group/{upc}")
     public ResponseEntity<Page<OrderDetailsModel>> getDetailsGroupByShipOrder(
             @PathVariable String upc,
@@ -132,6 +146,7 @@ public class OrderDetailsController {
 
     // ---------------- CITY ----------------
 
+    @Cacheable(cacheNames = "orderDetails")
     @GetMapping("/city/{id}")
     public ResponseEntity<Page<OrderDetailsModel>> getCityOrderDetails(
             @PathVariable String id,
@@ -140,6 +155,7 @@ public class OrderDetailsController {
         return ResponseEntity.ok(orderDetailsService.showCityOrder(id, PageRequest.of(page, size)));
     }
 
+    @Cacheable(cacheNames = "orderDetails")
     @GetMapping("/city/{od}/{id}")
     public ResponseEntity<List<OrderDetailsModel>> getCityOrderDetailsByOrderAndCity(
             @PathVariable String od,
@@ -149,6 +165,7 @@ public class OrderDetailsController {
 
     // ---------------- FACTURE ----------------
 
+    @Cacheable(cacheNames = "orderDetails")
     @GetMapping("/facture/{id}/{od}")
     public ResponseEntity<Page<OrderDetailsModel>> getDetailsFacture(
             @PathVariable String id,
@@ -158,6 +175,7 @@ public class OrderDetailsController {
         return ResponseEntity.ok(orderDetailsService.getDetailsFacture(id, od, PageRequest.of(page, size)));
     }
 
+    @Cacheable(cacheNames = "orderDetails")
     @GetMapping("/facture/client/{id}/{od}")
     public ResponseEntity<Page<OrderDetailsModel>> getDetailsByClientCode(
             @PathVariable String id,
@@ -167,6 +185,7 @@ public class OrderDetailsController {
         return ResponseEntity.ok(orderDetailsService.getDetailsByClientCode(id, od, PageRequest.of(page, size)));
     }
 
+    @CacheEvict(cacheNames = "orderDetails", allEntries = true)
     @PutMapping("/facture/update/{od}/{id}")
     public ResponseEntity<OrderDetailsModel> updateDetailsAfterFacture(
             @PathVariable String od,
@@ -175,6 +194,7 @@ public class OrderDetailsController {
         return updated != null ? ResponseEntity.ok(updated) : ResponseEntity.notFound().build();
     }
 
+    @CacheEvict(cacheNames = "orderDetails", allEntries = true)
     @PostMapping("/facture/quick")
     public ResponseEntity<FactureModel> createQuickFacture(@RequestBody FactureModel factureModel) {
         FactureModel facture = factureService.createQuickFacture(factureModel);
@@ -183,6 +203,7 @@ public class OrderDetailsController {
 
     // ---------------- CLIENT ----------------
 
+    @Cacheable(cacheNames = "orderDetails")
     @GetMapping("/client/{usercode}")
     public ResponseEntity<Page<OrderDetailsModel>> getClientOrders(
             @PathVariable String usercode,
@@ -191,6 +212,7 @@ public class OrderDetailsController {
         return ResponseEntity.ok(orderDetailsService.getByClient(usercode, PageRequest.of(page, size)));
     }
 
+    @Cacheable(cacheNames = "orderDetails")
     @GetMapping("/findclient/{usercode}")
     public ResponseEntity<Page<OrderDetailsModel>> getSearchClientOrders(
             @PathVariable String usercode,
@@ -200,11 +222,13 @@ public class OrderDetailsController {
         return ResponseEntity.ok(orderDetailsService.getSearchByClient(usercode,search,PageRequest.of(page, size)));
     }
 
+    @Cacheable(cacheNames = "orderDetails")
     @GetMapping("/trackcolis")
     public ResponseEntity<OrderDetailsModel> trackColis(@RequestParam() String search) {
         return ResponseEntity.ok(orderDetailsService.trackColis(search));
     }
 
+    @Cacheable(cacheNames = "orderDetails")
     @GetMapping("/client/search/{usercode}")
     public ResponseEntity<Page<OrderDetailsModel>> searchClientOrders(
             @PathVariable String usercode,
@@ -214,6 +238,7 @@ public class OrderDetailsController {
         return ResponseEntity.ok(orderDetailsService.searchByClient(usercode, param, PageRequest.of(page, size)));
     }
 
+    @Cacheable(cacheNames = "orderDetails")
     @GetMapping("/client/searchs/{usercode}")
     public ResponseEntity<List<OrderDetailsModel>> searchClientOrders(@PathVariable String usercode,@RequestParam String param) {
         return ResponseEntity.ok(orderDetailsService.searchByClient(usercode, param));
@@ -221,6 +246,7 @@ public class OrderDetailsController {
 
     // ---------------- SHIPPING STATS ----------------
 
+    @Cacheable(cacheNames = "orderDetails")
     @GetMapping("/shipping/count")
     public ResponseEntity<Page<OrderDetailsModel>> getShippingCount(
             @RequestParam(defaultValue = "0") int page,
@@ -246,12 +272,14 @@ public class OrderDetailsController {
         }
     }
 
+    @CacheEvict(cacheNames = "orderDetails", allEntries = true)
     @PutMapping("/updatedetails/{od}")
     public ResponseEntity<String> updateDetailsAfterReceiveOrder(@PathVariable String od) {
         String updated = orderDetailsService.updateDetails(od);
         return updated != null ? ResponseEntity.ok(updated) : ResponseEntity.notFound().build();
     }
 
+    @CacheEvict(cacheNames = "orderDetails", allEntries = true)
     @PutMapping("/updatecolis/{upc}")
     public ResponseEntity<OrderDetailsModel> updateDetailsColis(@PathVariable String upc,@RequestParam long id) {
         OrderDetailsModel model= orderDetailsService.updateColis(id,upc);
@@ -274,6 +302,7 @@ public class OrderDetailsController {
         }
     }
 
+    @Cacheable(cacheNames = "orderDetails")
     @GetMapping("/livraison/{order}")
     public ResponseEntity<List<OrderDetailsModel>> getCityOrderDetails(
             @PathVariable String order,
@@ -281,6 +310,7 @@ public class OrderDetailsController {
         return ResponseEntity.ok(orderDetailsService.countOrderDetails(order,cityID));
     }
 
+    @Cacheable(cacheNames = "orderDetails")
     @GetMapping("/livraisonsearch/{order}")
     public ResponseEntity<List<OrderDetailsModel>> getCityOrderDetails(
             @PathVariable String order,
@@ -313,60 +343,70 @@ public class OrderDetailsController {
                 .body(pdfBytes);
     }
 
+    @Cacheable(cacheNames = "orderDetails")
     @GetMapping("/objectif")
     public ResponseEntity<OrderDetailsModel> getFactureAmount(){
         OrderDetailsModel model=orderDetailsService.getTotal();
         return ResponseEntity.ok(model);
     }
 
+    @CacheEvict(cacheNames = "orderDetails", allEntries = true)
     @PostMapping
     public ResponseEntity<OrderDetailsModel> createSendOrderDetails(@RequestBody OrderDetailsModel orderDetailsModel) {
         OrderDetailsModel model=orderDetailsService.createSendDetails(orderDetailsModel);
         return ResponseEntity.ok(model);
     }
 
+    @Cacheable(cacheNames = "orderDetails")
     @GetMapping("/graphecolisparville/{id}")
     public ResponseEntity<List> getColisVille(@PathVariable("id") Long id){
         List<OrderDetailsModel> model=orderDetailsService.grapheColisParVille(id);
         return ResponseEntity.ok(model);
     }
 
+    @Cacheable(cacheNames = "orderDetails")
     @GetMapping("/grapheamountparville/{id}")
     public ResponseEntity<List> getAmountVille(@PathVariable("id") Long id){
         List<OrderDetailsModel> model=orderDetailsService.grapheAmountParVille(id);
         return ResponseEntity.ok(model);
     }
 
+    @Cacheable(cacheNames = "orderDetails")
     @GetMapping("/objectifs/{cityID}")
     public ResponseEntity<OrderDetailsModel> getFactureAmount(@PathVariable("cityID") Long cityID){
         OrderDetailsModel model=orderDetailsService.getTotal(cityID);
         return ResponseEntity.ok(model);
     }
 
+    @CacheEvict(cacheNames = "orderDetails", allEntries = true)
     @PutMapping("/actualiser/{id}")
     public ResponseEntity<OrderDetailsModel> updateOrderDetails(@PathVariable("id") Long id,@RequestBody OrderDetailsModel orderDetailsModel) {
         OrderDetailsModel model=orderDetailsService.updateOrderDetails(id, orderDetailsModel);
         return ResponseEntity.ok(model);
     }
 
+    @CacheEvict(cacheNames = "orderDetails", allEntries = true)
     @PutMapping("/transfer/{id}")
     public ResponseEntity<OrderDetailsModel> transferOrderDetails(@PathVariable("id") Long id,@RequestParam("order_id") Long orderId) {
         OrderDetailsModel model=orderDetailsService.transferOrderDetails(id, orderId);
         return ResponseEntity.ok(model);
     }
 
+    @Cacheable(cacheNames = "orderDetails")
     @GetMapping("/findclientinorder/{orderID}")
     public ResponseEntity<List> findClientInOrder(@PathVariable("orderID") Long orderID){
         List<OrderDetailsModel> model=orderDetailsService.findClientInOrder(orderID);
         return ResponseEntity.ok(model);
     }
 
+    @Cacheable(cacheNames = "orderDetails")
     @GetMapping("/searchclientinorder/{orderID}")
     public ResponseEntity<List> searchClientInOrder(@PathVariable("orderID") Long orderID,@RequestParam String search){
         List<OrderDetailsModel> model=orderDetailsService.searchClientInOrder(orderID,search);
         return ResponseEntity.ok(model);
     }
 
+    @Cacheable(cacheNames = "orderDetails")
     @GetMapping("/getclientinorder/{orderID}")
     public ResponseEntity<List> getClientInOrder(@PathVariable("orderID") Long orderID,@RequestParam String search){
         List<OrderDetailsModel> model=orderDetailsService.getClientInOrder(orderID,search);

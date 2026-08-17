@@ -1,5 +1,8 @@
 package com.velogexpress.controller;
 
+import org.springframework.cache.annotation.Cacheable;
+import org.springframework.cache.annotation.CacheEvict;
+
 import com.velogexpress.model.ChatroomModel;
 import com.velogexpress.service.ChatroomService;
 import lombok.AllArgsConstructor;
@@ -20,6 +23,7 @@ public class ChatroomController {
     private final ChatroomService chatroomService;
 
     // Create Chatroom
+    @CacheEvict(cacheNames = "chatroom", allEntries = true)
     @PostMapping
     public ResponseEntity<ChatroomModel> createChat(@RequestBody ChatroomModel chatroomModel) {
         ChatroomModel savedChat = chatroomService.createChatroom(chatroomModel);
@@ -27,6 +31,7 @@ public class ChatroomController {
     }
 
     // Get all chatrooms with pagination
+    @Cacheable(cacheNames = "chatroom")
     @GetMapping
     public ResponseEntity<Page<ChatroomModel>> getAllChat(Pageable pageable) {
         Page<ChatroomModel> chatList = chatroomService.getAllChatroom(pageable);
@@ -34,6 +39,7 @@ public class ChatroomController {
     }
 
     // Get chatrooms by client or description
+    @Cacheable(cacheNames = "chatroom")
     @GetMapping("/{client}")
     public ResponseEntity<Page<ChatroomModel>> getChatsByClient(
             @PathVariable String client,
@@ -45,6 +51,7 @@ public class ChatroomController {
     }
 
     // Update chatroom status
+    @CacheEvict(cacheNames = "chatroom", allEntries = true)
     @PutMapping("/{client}")
     public ResponseEntity<?> updateChatroom(@PathVariable String client) {
         ChatroomModel updated = chatroomService.updateChatroom(client);
@@ -55,6 +62,7 @@ public class ChatroomController {
     }
 
     // Delete chatroom
+    @CacheEvict(cacheNames = "chatroom", allEntries = true)
     @DeleteMapping("/{client}")
     public ResponseEntity<?> deleteChat(@PathVariable String client) {
         chatroomService.deleteChatroom(client);

@@ -1,5 +1,8 @@
 package com.velogexpress.controller;
 
+import org.springframework.cache.annotation.Cacheable;
+import org.springframework.cache.annotation.CacheEvict;
+
 import com.velogexpress.model.FactureDetailsModel;
 import com.velogexpress.service.FactureDetailsService;
 import lombok.AllArgsConstructor;
@@ -19,6 +22,7 @@ public class FactureDetailsController {
 
     private final FactureDetailsService factureDetailsService;
 
+    @CacheEvict(cacheNames = "factureDetails", allEntries = true)
     @PostMapping
     public ResponseEntity<FactureDetailsModel> createDetails(@RequestBody FactureDetailsModel factureDetailsModel) {
         log.info("Creating FactureDetails for facture: {}", factureDetailsModel.getFacture());
@@ -26,6 +30,7 @@ public class FactureDetailsController {
         return new ResponseEntity<>(model, HttpStatus.CREATED);
     }
 
+    @CacheEvict(cacheNames = "factureDetails", allEntries = true)
     @PostMapping("/quickfacture")
     public ResponseEntity<FactureDetailsModel> createQuickDetails(@RequestBody FactureDetailsModel factureDetailsModel) {
         log.info("Creating FactureDetails for facture: {}", factureDetailsModel.getFacture());
@@ -33,6 +38,7 @@ public class FactureDetailsController {
         return new ResponseEntity<>(model, HttpStatus.CREATED);
     }
 
+    @Cacheable(cacheNames = "factureDetails")
     @GetMapping
     public ResponseEntity<Page<FactureDetailsModel>> getAllFactureDetails(
             @RequestParam(defaultValue = "0") int page,
@@ -41,6 +47,7 @@ public class FactureDetailsController {
         return ResponseEntity.ok(model);
     }
 
+    @Cacheable(cacheNames = "factureDetails")
     @GetMapping("/details/{code}")
     public ResponseEntity<Page<FactureDetailsModel>> getAFactureDetails(
             @PathVariable("code") String code,
@@ -50,6 +57,7 @@ public class FactureDetailsController {
         return ResponseEntity.ok(model);
     }
 
+    @Cacheable(cacheNames = "factureDetails")
     @GetMapping("{code}")
     public ResponseEntity<FactureDetailsModel> getFactureDetailsByColis(@PathVariable("code") String code) {
         return factureDetailsService.getSingleFactureDetails(code)
@@ -58,6 +66,7 @@ public class FactureDetailsController {
     }
 
 
+    @CacheEvict(cacheNames = "factureDetails", allEntries = true)
     @DeleteMapping("{code}")
     public ResponseEntity<String> deleteFactureDetails(@PathVariable("code") Long code) {
         log.info("Deleting FactureDetails with id: {}", code);
@@ -65,6 +74,7 @@ public class FactureDetailsController {
         return ResponseEntity.ok("Facture Details deleted successfully.");
     }
 
+    @Cacheable(cacheNames = "factureDetails")
     @GetMapping("/by-facture/{code}")
     public ResponseEntity<Page<FactureDetailsModel>> getFactureDetailsByFactureCode(
             @PathVariable("code") String code,

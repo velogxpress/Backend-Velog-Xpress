@@ -1,5 +1,8 @@
 package com.velogexpress.controller;
 
+import org.springframework.cache.annotation.Cacheable;
+import org.springframework.cache.annotation.CacheEvict;
+
 import com.velogexpress.model.TauxModel;
 import com.velogexpress.service.TauxService;
 import lombok.RequiredArgsConstructor;
@@ -18,6 +21,7 @@ public class TauxController {
     private final TauxService tauxService;
 
     // ✅ Create a new Taux
+    @CacheEvict(cacheNames = "taux", allEntries = true)
     @PostMapping
     public ResponseEntity<TauxModel> createTaux(@Valid @RequestBody TauxModel tauxModel) {
         TauxModel saved = tauxService.createTaux(tauxModel);
@@ -25,6 +29,7 @@ public class TauxController {
     }
 
     // ✅ Get all Taux with pagination
+    @Cacheable(cacheNames = "taux")
     @GetMapping
     public ResponseEntity<Page<TauxModel>> getAllTaux(
             @RequestParam(defaultValue = "0") int page,
@@ -38,6 +43,7 @@ public class TauxController {
     }
 
     // ✅ Get Taux by Devise with pagination
+    @Cacheable(cacheNames = "taux")
     @GetMapping("/devise/{description}")
     public ResponseEntity<Page<TauxModel>> getTauxByDevise(
             @PathVariable String description,
@@ -52,6 +58,7 @@ public class TauxController {
     }
 
     // ✅ Get Taux by Devise with pagination
+    @Cacheable(cacheNames = "taux")
     @GetMapping("/gettaux/{description}")
     public ResponseEntity<TauxModel> getTaux(@PathVariable String description) {
         TauxModel tauxPage = tauxService.getTauxByDevise(description);
@@ -59,6 +66,7 @@ public class TauxController {
     }
 
     // ✅ Update Taux by Devise
+    @CacheEvict(cacheNames = "taux", allEntries = true)
     @PutMapping("/{id}")
     public ResponseEntity<TauxModel> updateTaux(
             @PathVariable Long id,
@@ -72,6 +80,7 @@ public class TauxController {
     }
 
     // ✅ Delete Taux by Devise
+    @CacheEvict(cacheNames = "taux", allEntries = true)
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteTaux(@PathVariable Long id) {
         tauxService.deleteTaux(id);

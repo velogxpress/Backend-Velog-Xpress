@@ -1,5 +1,8 @@
 package com.velogexpress.controller;
 
+import org.springframework.cache.annotation.Cacheable;
+import org.springframework.cache.annotation.CacheEvict;
+
 import com.velogexpress.model.MachineModel;
 import com.velogexpress.service.MachineService;
 import lombok.RequiredArgsConstructor;
@@ -19,6 +22,7 @@ public class MachineController {
     private final MachineService machineService;
 
     /** ✅ Create a new machine */
+    @CacheEvict(cacheNames = "machine", allEntries = true)
     @PostMapping
     public ResponseEntity<MachineModel> createMachine(@RequestBody MachineModel machineModel) {
         MachineModel created = machineService.createMachine(machineModel);
@@ -26,6 +30,7 @@ public class MachineController {
     }
 
     /** ✅ Get all machines with pagination */
+    @Cacheable(cacheNames = "machine")
     @GetMapping
     public ResponseEntity<Page<MachineModel>> getAllMachines(
             @RequestParam(defaultValue = "0") int page,
@@ -37,6 +42,7 @@ public class MachineController {
     }
 
     /** ✅ Get one machine by serial */
+    @Cacheable(cacheNames = "machine")
     @GetMapping("/{serial}")
     public ResponseEntity<MachineModel> getMachineBySerial(@PathVariable String serial) {
         MachineModel machine = machineService.getMachineBySerial(serial);
@@ -47,6 +53,7 @@ public class MachineController {
     }
 
     /** ✅ Update a machine by serial */
+    @CacheEvict(cacheNames = "machine", allEntries = true)
     @PutMapping("/{serial}")
     public ResponseEntity<MachineModel> updateMachine(
             @PathVariable String serial,
@@ -60,6 +67,7 @@ public class MachineController {
     }
 
     /** ✅ Delete a machine by serial */
+    @CacheEvict(cacheNames = "machine", allEntries = true)
     @DeleteMapping("/{serial}")
     public ResponseEntity<Void> deleteMachine(@PathVariable String serial) {
         machineService.deleteMachine(serial);
@@ -67,6 +75,7 @@ public class MachineController {
     }
 
     /** ✅ Search machines by keyword (serial, name, marque) */
+    @Cacheable(cacheNames = "machine")
     @GetMapping("/search")
     public ResponseEntity<Page<MachineModel>> searchMachines(
             @RequestParam String keyword,

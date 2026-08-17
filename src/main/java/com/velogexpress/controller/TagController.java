@@ -1,5 +1,7 @@
 package com.velogexpress.controller;
 
+import org.springframework.cache.annotation.Cacheable;
+
 import com.velogexpress.model.TagModel;
 import com.velogexpress.service.TagService;
 import lombok.AllArgsConstructor;
@@ -14,6 +16,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/api/tag")
 public class TagController {
     private TagService tagService;
+    @Cacheable(cacheNames = "tag")
     @GetMapping("/bin/{desc}")
     public ResponseEntity<TagModel> getTag(@PathVariable String desc) {
         TagModel tagModel = tagService.getTag(desc);

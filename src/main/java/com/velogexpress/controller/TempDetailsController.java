@@ -1,5 +1,8 @@
 package com.velogexpress.controller;
 
+import org.springframework.cache.annotation.Cacheable;
+import org.springframework.cache.annotation.CacheEvict;
+
 import com.velogexpress.model.TempDetailsModel;
 import com.velogexpress.service.TempDetailsService;
 import lombok.RequiredArgsConstructor;
@@ -17,6 +20,7 @@ public class TempDetailsController {
     private final TempDetailsService tempDetailsService;
 
     // ✅ Create a new TempDetails entry
+    @CacheEvict(cacheNames = "tempDetails", allEntries = true)
     @PostMapping
     public ResponseEntity<TempDetailsModel> createDetails(@RequestBody TempDetailsModel tempDetailsModel) {
         TempDetailsModel saved = tempDetailsService.createFactureDetailsTMP(tempDetailsModel);
@@ -24,6 +28,7 @@ public class TempDetailsController {
     }
 
     // ✅ Get all TempDetails for a client
+    @Cacheable(cacheNames = "tempDetails")
     @GetMapping("/{client}")
     public ResponseEntity<Page<TempDetailsModel>> getAllDetailsByClient(
             @PathVariable String client,
@@ -37,6 +42,7 @@ public class TempDetailsController {
     }
 
     // ✅ Get TempDetails by Facture ID (string identifier)
+    @Cacheable(cacheNames = "tempDetails")
     @GetMapping("/facture/{factureId}")
     public ResponseEntity<TempDetailsModel> getDetailsByFactureId(@PathVariable String factureId) {
         TempDetailsModel model = tempDetailsService.getSingleFactureDetailsTMP(factureId);
@@ -44,6 +50,7 @@ public class TempDetailsController {
     }
 
     // ✅ Get TempDetails by numeric ID
+    @Cacheable(cacheNames = "tempDetails")
     @GetMapping("/single/{id}")
     public ResponseEntity<TempDetailsModel> getDetailsById(@PathVariable Long id) {
         TempDetailsModel model = tempDetailsService.getSingleDetailsTMP(id);
@@ -51,6 +58,7 @@ public class TempDetailsController {
     }
 
     // ✅ Update TempDetails by ID
+    @CacheEvict(cacheNames = "tempDetails", allEntries = true)
     @PutMapping("/{id}")
     public ResponseEntity<TempDetailsModel> updateDetails(@PathVariable Long id,
                                                           @RequestBody TempDetailsModel tempDetailsModel) {
@@ -59,6 +67,7 @@ public class TempDetailsController {
     }
 
     // ✅ Delete TempDetails by numeric ID
+    @CacheEvict(cacheNames = "tempDetails", allEntries = true)
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteDetails(@PathVariable Long id) {
         tempDetailsService.deleteFactureDetailsTMP(id);
@@ -66,6 +75,7 @@ public class TempDetailsController {
     }
 
 
+    @CacheEvict(cacheNames = "tempDetails", allEntries = true)
     @DeleteMapping("/details/{code}")
     public ResponseEntity<String> deleteFactureDetails(@PathVariable("code") String code,
                                                        @RequestParam(defaultValue = "0") int page,
@@ -76,6 +86,7 @@ public class TempDetailsController {
     }
 
     // ✅ Delete all TempDetails for a client
+    @CacheEvict(cacheNames = "tempDetails", allEntries = true)
     @DeleteMapping("/client/{client}")
     public ResponseEntity<Void> deleteAllDetailsByClient(@PathVariable String client,
                                                          @RequestParam(defaultValue = "0") int page,

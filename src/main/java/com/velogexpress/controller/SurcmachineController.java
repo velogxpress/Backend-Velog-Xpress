@@ -1,5 +1,8 @@
 package com.velogexpress.controller;
 
+import org.springframework.cache.annotation.Cacheable;
+import org.springframework.cache.annotation.CacheEvict;
+
 import com.velogexpress.model.SurcmachineModel;
 import com.velogexpress.service.SurcmachineService;
 import lombok.AllArgsConstructor;
@@ -21,6 +24,7 @@ public class SurcmachineController {
     private final SurcmachineService surcmachineService;
 
     // ✅ Create Surcmachine
+    @CacheEvict(cacheNames = "surcmachine", allEntries = true)
     @PostMapping
     public ResponseEntity<SurcmachineModel> createSurcmachine(@Valid @RequestBody SurcmachineModel model) {
         SurcmachineModel saved = surcmachineService.createSurcmachine(model);
@@ -28,6 +32,7 @@ public class SurcmachineController {
     }
 
     // ✅ Get all Surcmachines (paginated)
+    @Cacheable(cacheNames = "surcmachine")
     @GetMapping
     public ResponseEntity<Page<SurcmachineModel>> getAllSurcmachine(
             @RequestParam(defaultValue = "0") int page,
@@ -38,6 +43,7 @@ public class SurcmachineController {
     }
 
     // ✅ Search Surcmachines by serial or name (paginated)
+    @Cacheable(cacheNames = "surcmachine")
     @GetMapping("/search")
     public ResponseEntity<Page<SurcmachineModel>> searchSurcmachines(
             @RequestParam String query,
@@ -49,6 +55,7 @@ public class SurcmachineController {
     }
 
     // ✅ Get a Surcmachine by machine serial
+    @Cacheable(cacheNames = "surcmachine")
     @GetMapping("/machine/{serial}")
     public ResponseEntity<SurcmachineModel> getSurcmachineBySerial(@PathVariable String serial) {
         SurcmachineModel model = surcmachineService.getSurcmachineByMachineSerial(serial);
@@ -57,6 +64,7 @@ public class SurcmachineController {
     }
 
     // ✅ Update Surcmachine by machine serial
+    @CacheEvict(cacheNames = "surcmachine", allEntries = true)
     @PutMapping("/machine/{serial}")
     public ResponseEntity<SurcmachineModel> updateSurcmachine(
             @PathVariable String serial,
@@ -68,6 +76,7 @@ public class SurcmachineController {
     }
 
     // ✅ Delete Surcmachine by machine serial
+    @CacheEvict(cacheNames = "surcmachine", allEntries = true)
     @DeleteMapping("/machine/{serial}")
     public ResponseEntity<Void> deleteSurcmachine(@PathVariable String serial) {
         surcmachineService.deleteSurcmachine(serial);
@@ -75,6 +84,7 @@ public class SurcmachineController {
     }
 
     // ✅ Search Surcmachines by Surcursal (paginated)
+    @Cacheable(cacheNames = "surcmachine")
     @GetMapping("/surcursal/{surcursal}")
     public ResponseEntity<Page<SurcmachineModel>> getSurcmachinesBySurcursal(
             @PathVariable("surcursal") String surcursal,

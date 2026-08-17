@@ -1,5 +1,8 @@
 package com.velogexpress.controller;
 
+import org.springframework.cache.annotation.Cacheable;
+import org.springframework.cache.annotation.CacheEvict;
+
 import com.velogexpress.model.CipinfeeModel;
 import com.velogexpress.service.CipinfeeService;
 import lombok.AllArgsConstructor;
@@ -20,6 +23,7 @@ public class CipinfeeController {
     private final CipinfeeService cipinfeeService;
 
     // CREATE
+    @CacheEvict(cacheNames = "cipinfee", allEntries = true)
     @PostMapping
     public ResponseEntity<CipinfeeModel> createCipinfee(@RequestBody CipinfeeModel cipinfeeModel) {
         CipinfeeModel model = cipinfeeService.createCipinfee(cipinfeeModel);
@@ -27,6 +31,7 @@ public class CipinfeeController {
     }
 
     // GET ALL (paged)
+    @Cacheable(cacheNames = "cipinfee")
     @GetMapping
     public ResponseEntity<Page<CipinfeeModel>> getAllCipinfee(
             @RequestParam(defaultValue = "0") int page,
@@ -36,6 +41,7 @@ public class CipinfeeController {
         return ResponseEntity.ok(modelList);
     }
 
+    @Cacheable(cacheNames = "cipinfee")
     @GetMapping("/search/{city}")
     public ResponseEntity<Page<CipinfeeModel>> getAllCipinfeeByCity(
             @PathVariable("city") String city,
@@ -47,6 +53,7 @@ public class CipinfeeController {
     }
 
     // GET BY ID
+    @Cacheable(cacheNames = "cipinfee")
     @GetMapping("{id}")
     public ResponseEntity<CipinfeeModel> getCipinfeeById(@PathVariable Long id) {
         CipinfeeModel model = cipinfeeService.getCipinfeeById(id);
@@ -54,6 +61,7 @@ public class CipinfeeController {
     }
 
     // UPDATE BY ID
+    @CacheEvict(cacheNames = "cipinfee", allEntries = true)
     @PutMapping("{id}")
     public ResponseEntity<CipinfeeModel> updateCipinfee(
             @PathVariable Long id,
@@ -64,6 +72,7 @@ public class CipinfeeController {
     }
 
     // DELETE
+    @CacheEvict(cacheNames = "cipinfee", allEntries = true)
     @DeleteMapping("{id}")
     public ResponseEntity<String> deleteCipinfee(@PathVariable Long id) {
         cipinfeeService.deleteCipinfee(id);
@@ -71,6 +80,7 @@ public class CipinfeeController {
     }
 
     //Build get City Vs Fees By ID
+    @Cacheable(cacheNames = "cipinfee")
     @GetMapping("/feesfound/{id}")
     public ResponseEntity<CipinfeeModel> getCipinfeeModelById(@PathVariable("id") Long id){
         CipinfeeModel model=cipinfeeService.getCipinfeeByCity(id);

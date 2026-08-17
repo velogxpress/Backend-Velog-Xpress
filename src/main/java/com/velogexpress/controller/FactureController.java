@@ -1,5 +1,8 @@
 package com.velogexpress.controller;
 
+import org.springframework.cache.annotation.Cacheable;
+import org.springframework.cache.annotation.CacheEvict;
+
 import com.velogexpress.model.FactureModel;
 import com.velogexpress.service.FactureService;
 import com.velogexpress.service.PdfService;
@@ -25,6 +28,7 @@ public class FactureController {
     private final PdfService pdfService;
 
     // ----------------- CREATE FACTURE -----------------
+    @CacheEvict(cacheNames = "facture", allEntries = true)
     @PostMapping
     public ResponseEntity<FactureModel> createFacture(@RequestBody FactureModel factureModel) {
         FactureModel facture = factureService.createFacture(factureModel);
@@ -32,6 +36,7 @@ public class FactureController {
     }
 
     // ----------------- GET ALL FACTURES -----------------
+    @Cacheable(cacheNames = "facture")
     @GetMapping
     public ResponseEntity<Page<FactureModel>> getAllFactures(
             @RequestParam(defaultValue = "0") int page,
@@ -42,6 +47,7 @@ public class FactureController {
     }
 
     // ----------------- GET FACTURE BY CODE -----------------
+    @Cacheable(cacheNames = "facture")
     @GetMapping("/{code}")
     public ResponseEntity<FactureModel> getFactureByCode(@PathVariable("code") String code) {
         Optional<FactureModel> model = factureService.getFactureByCode(code);
@@ -51,6 +57,7 @@ public class FactureController {
     }
 
     // ----------------- UPDATE FACTURE STATUS -----------------
+    @CacheEvict(cacheNames = "facture", allEntries = true)
     @PutMapping("/{code}")
     public ResponseEntity<FactureModel> updateFacture(@PathVariable("code") String code) {
         Optional<FactureModel> model = factureService.updateFacture(code);
@@ -60,12 +67,14 @@ public class FactureController {
     }
 
     // ----------------- DELETE FACTURE -----------------
+    @CacheEvict(cacheNames = "facture", allEntries = true)
     @DeleteMapping("/{code}")
     public ResponseEntity<String> deleteFacture(@PathVariable("code") String code) {
         factureService.deleteFacture(code);
         return ResponseEntity.ok("Facture deleted successfully.");
     }
 
+    @Cacheable(cacheNames = "facture")
     @GetMapping("/searchfacture/{code}")
     public ResponseEntity<Page> getFactureByCode(@PathVariable("code") String code,
                                                  @RequestParam(defaultValue = "0") int page,
@@ -75,6 +84,7 @@ public class FactureController {
         return ResponseEntity.ok(model);
     }
 
+    @Cacheable(cacheNames = "facture")
     @GetMapping("/facturewith/{id}&{od}")
     public ResponseEntity<Page> getFactureDetailsWith(@PathVariable("id") String Id, @PathVariable("od") Long Od,
                                                       @RequestParam(defaultValue = "0") int page,
@@ -132,6 +142,7 @@ public class FactureController {
                 .body(pdfBytes);
     }
 
+    @Cacheable(cacheNames = "facture")
     @GetMapping("/whatsappfacture/{upc}")
     public ResponseEntity<String> moveFactureForWhatsappA4(@PathVariable("upc") String upc) {
         System.out.println("Controller reached");
@@ -141,12 +152,14 @@ public class FactureController {
     }
 
 
+    @Cacheable(cacheNames = "facture")
     @GetMapping("/facturetoday")
     public ResponseEntity<FactureModel> getFactureToday(){
         FactureModel ModelList=factureService.getFactureToday();
         return ResponseEntity.ok(ModelList);
     }
 
+    @Cacheable(cacheNames = "facture")
     @GetMapping("/getfacturestatistique")
     public ResponseEntity<Page<FactureModel>> getFactureStatistique(
             @RequestParam Long orderID,
@@ -157,6 +170,7 @@ public class FactureController {
         return ResponseEntity.ok(ModelList);
     }
 
+    @Cacheable(cacheNames = "facture")
     @GetMapping("/getfacturestatistique/{orderID}")
     public ResponseEntity<Page<FactureModel>> getFactureStatistique(
             @PathVariable Long orderID,
@@ -167,6 +181,7 @@ public class FactureController {
         Page<FactureModel> ModelList=factureService.getCountAllFactureBySurcursal(orderID,surcursalID, PageRequest.of(page, size));
         return ResponseEntity.ok(ModelList);
     }
+    @Cacheable(cacheNames = "facture")
     @GetMapping("/facturetodays/{ID}")
     public ResponseEntity<FactureModel> getFactureTodays(@PathVariable("ID") Long ID){
         FactureModel ModelList=factureService.getFactureToday(ID);

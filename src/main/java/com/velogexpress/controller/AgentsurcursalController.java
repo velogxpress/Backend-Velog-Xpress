@@ -1,5 +1,8 @@
 package com.velogexpress.controller;
 
+import org.springframework.cache.annotation.Cacheable;
+import org.springframework.cache.annotation.CacheEvict;
+
 import com.velogexpress.model.AgentsurcursalModel;
 import com.velogexpress.service.AgentsurcursalService;
 import lombok.AllArgsConstructor;
@@ -20,6 +23,7 @@ public class AgentsurcursalController {
     private final AgentsurcursalService agentsurcursalService;
 
     // Create Agentsurcursal
+    @CacheEvict(cacheNames = "agentsurcursal", allEntries = true)
     @PostMapping
     public ResponseEntity<AgentsurcursalModel> create(@RequestBody AgentsurcursalModel model) {
         AgentsurcursalModel created = agentsurcursalService.createAgentsurcursal(model);
@@ -27,12 +31,14 @@ public class AgentsurcursalController {
     }
 
     // Get all Agentsurcursals (paginated)
+    @Cacheable(cacheNames = "agentsurcursal")
     @GetMapping
     public ResponseEntity<Page<AgentsurcursalModel>> getAll(Pageable pageable) {
         return ResponseEntity.ok(agentsurcursalService.getAllAgentsurcursals(pageable));
     }
 
     // Search by userCode (paginated)
+    @Cacheable(cacheNames = "agentsurcursal")
     @GetMapping("/search/{userCode}")
     public ResponseEntity<Page<AgentsurcursalModel>> searchByUserCode(
             @PathVariable String userCode,
@@ -44,12 +50,14 @@ public class AgentsurcursalController {
     }
 
     // Get by userCode
+    @Cacheable(cacheNames = "agentsurcursal")
     @GetMapping("/{userCode}")
     public ResponseEntity<AgentsurcursalModel> getByUserCode(@PathVariable String userCode) {
         return ResponseEntity.ok(agentsurcursalService.getByUserCode(userCode));
     }
 
     // Update by userCode
+    @CacheEvict(cacheNames = "agentsurcursal", allEntries = true)
     @PutMapping("/{userCode}")
     public ResponseEntity<AgentsurcursalModel> update(
             @PathVariable String userCode,
@@ -59,6 +67,7 @@ public class AgentsurcursalController {
     }
 
     // Delete by userCode
+    @CacheEvict(cacheNames = "agentsurcursal", allEntries = true)
     @DeleteMapping("/{userCode}")
     public ResponseEntity<String> delete(@PathVariable String userCode) {
         agentsurcursalService.deleteByUserCode(userCode);
@@ -66,6 +75,7 @@ public class AgentsurcursalController {
     }
 
     //Build get agent by usercode
+    @Cacheable(cacheNames = "agentsurcursal")
     @GetMapping("/agentsurcursalsearch/{usercode}")
     public ResponseEntity<Page> getAgentsurcursalByUsercode(@PathVariable("usercode") String usercode,
                                                             @RequestParam(defaultValue = "0") int page,

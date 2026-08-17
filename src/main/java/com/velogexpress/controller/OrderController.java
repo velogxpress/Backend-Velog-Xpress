@@ -1,5 +1,8 @@
 package com.velogexpress.controller;
 
+import org.springframework.cache.annotation.Cacheable;
+import org.springframework.cache.annotation.CacheEvict;
+
 import com.velogexpress.model.OrderModel;
 import com.velogexpress.service.OrderService;
 import com.velogexpress.service.PdfService;
@@ -27,6 +30,7 @@ public class OrderController {
     /**
      * Create a new order.
      */
+    @CacheEvict(cacheNames = "order", allEntries = true)
     @PostMapping
     public ResponseEntity<OrderModel> createOrder() {
         OrderModel created = orderService.createOrder();
@@ -36,6 +40,7 @@ public class OrderController {
     /**
      * Retrieve all orders with pagination.
      */
+    @Cacheable(cacheNames = "order")
     @GetMapping
     public ResponseEntity<Page<OrderModel>> getAllOrders(
             @RequestParam(defaultValue = "0") int page,
@@ -48,6 +53,7 @@ public class OrderController {
     /**
      * Retrieve all orders with pagination.
      */
+    @Cacheable(cacheNames = "order")
     @GetMapping("/combo")
     public ResponseEntity<Page<OrderModel>> getAllOrdersCombo(
             @RequestParam(defaultValue = "0") int page,
@@ -60,6 +66,7 @@ public class OrderController {
     /**
      * Retrieve an order by its shipment code.
      */
+    @Cacheable(cacheNames = "order")
     @GetMapping("/{upc}")
     public ResponseEntity<?> getOrderByShipOrder(@PathVariable String upc) {
         OrderModel model = orderService.getOrderByShiporderCode(upc);
@@ -73,6 +80,7 @@ public class OrderController {
     /**
      * Update an order by its shipment code.
      */
+    @CacheEvict(cacheNames = "order", allEntries = true)
     @PutMapping("/{upc}")
     public ResponseEntity<?> updateShipOrder(
             @PathVariable String upc,
@@ -95,6 +103,7 @@ public class OrderController {
     /**
      * Delete an order by its shipment code.
      */
+    @CacheEvict(cacheNames = "order", allEntries = true)
     @DeleteMapping("/{upc}")
     public ResponseEntity<String> deleteOrder(@PathVariable String upc) {
         orderService.deleteOrder(upc);
@@ -104,6 +113,7 @@ public class OrderController {
     /**
      * Search orders by shipment code with pagination.
      */
+    @Cacheable(cacheNames = "order")
     @GetMapping("/search/{upc}")
     public ResponseEntity<Page<OrderModel>> searchOrdersByCode(
             @PathVariable String upc,
@@ -114,12 +124,14 @@ public class OrderController {
         return ResponseEntity.ok(orders);
     }
 
+    @Cacheable(cacheNames = "order")
     @GetMapping("/countcolis")
     public ResponseEntity<Long> countOrder(){
         Long counted=orderService.countOrders();
         return ResponseEntity.ok(counted);
     }
 
+    @Cacheable(cacheNames = "order")
     @GetMapping("/countcolisnow")
     public ResponseEntity<Long> countOrderNow(){
         Long counted=orderService.countOrdersNow();

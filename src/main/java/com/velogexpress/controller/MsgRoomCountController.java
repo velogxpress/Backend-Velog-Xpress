@@ -1,5 +1,7 @@
 package com.velogexpress.controller;
 
+import org.springframework.cache.annotation.Cacheable;
+
 import com.velogexpress.model.ChatroomDetailsModel;
 import com.velogexpress.service.ChatroomDetailsService;
 import lombok.AllArgsConstructor;
@@ -15,6 +17,7 @@ import java.util.List;
 public class MsgRoomCountController {
     private ChatroomDetailsService chatroomDetailsService;
     //Build Get Room By Description
+    @Cacheable(cacheNames = "msgRoomCount")
     @GetMapping("{id}")
     public ResponseEntity<ChatroomDetailsModel> getRoomCount(@PathVariable("id") Long id){
         ChatroomDetailsModel ChatroomDetailsModel=chatroomDetailsService.countRoom(id);

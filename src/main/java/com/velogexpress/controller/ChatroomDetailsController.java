@@ -1,5 +1,8 @@
 package com.velogexpress.controller;
 
+import org.springframework.cache.annotation.Cacheable;
+import org.springframework.cache.annotation.CacheEvict;
+
 import com.velogexpress.model.ChatroomDetailsModel;
 import com.velogexpress.service.ChatroomDetailsService;
 import lombok.AllArgsConstructor;
@@ -18,6 +21,7 @@ public class ChatroomDetailsController {
     private final ChatroomDetailsService chatroomDetailsService;
 
     // Create Chatroom Detail
+    @CacheEvict(cacheNames = "chatroomDetails", allEntries = true)
     @PostMapping
     public ResponseEntity<ChatroomDetailsModel> createChatroomDetail(
             @RequestBody ChatroomDetailsModel chatroomDetailsModel) {
@@ -26,6 +30,7 @@ public class ChatroomDetailsController {
     }
 
     // Get Chatroom Details by Chatroom ID
+    @Cacheable(cacheNames = "chatroomDetails")
     @GetMapping("/{id}")
     public ResponseEntity<Page<ChatroomDetailsModel>> getChatroomDetailsById(
             @PathVariable("id") Long id,

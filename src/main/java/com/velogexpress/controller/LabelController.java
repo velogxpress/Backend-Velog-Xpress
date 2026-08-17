@@ -1,5 +1,7 @@
 package com.velogexpress.controller;
 
+import org.springframework.cache.annotation.Cacheable;
+
 import com.velogexpress.model.OrderDetailsModel;
 import com.velogexpress.service.OrderDetailsService;
 import lombok.AllArgsConstructor;
@@ -14,6 +16,7 @@ public class LabelController {
     private OrderDetailsService orderDetailsService;
 
     //Build Print Label
+    @Cacheable(cacheNames = "label")
     @GetMapping("{upc}")
     public ResponseEntity<OrderDetailsModel> printSticker(@PathVariable("upc") String upc){
         OrderDetailsModel model=orderDetailsService.printLabel(upc);

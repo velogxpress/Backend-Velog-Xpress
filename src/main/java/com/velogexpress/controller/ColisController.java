@@ -1,5 +1,7 @@
 package com.velogexpress.controller;
 
+import org.springframework.cache.annotation.Cacheable;
+
 import com.velogexpress.model.OrderDetailsModel;
 import com.velogexpress.service.ColisCounterService;
 import lombok.AllArgsConstructor;
@@ -17,6 +19,7 @@ import java.util.List;
 public class ColisController {
     private ColisCounterService colisCounterService;
 
+    @Cacheable(cacheNames = "colis")
     @GetMapping("{usercode}")
     public ResponseEntity<Page> getDeliveredColis(@PathVariable("usercode") String code,
                                                   @RequestParam(defaultValue = "0") int page,
@@ -26,6 +29,7 @@ public class ColisController {
         return ResponseEntity.ok(model);
     }
 
+    @Cacheable(cacheNames = "colis")
     @GetMapping("/ready/{usercode}")
     public ResponseEntity<Page> getReadyColis(@PathVariable("usercode") String code,
                                                 @RequestParam(defaultValue = "0") int page,
@@ -35,6 +39,7 @@ public class ColisController {
         return ResponseEntity.ok(model);
     }
 
+    @Cacheable(cacheNames = "colis")
     @GetMapping("/shipped/{usercode}")
     public ResponseEntity<Page> getShippedColis(@PathVariable("usercode") String code,
                                                 @RequestParam(defaultValue = "0") int page,

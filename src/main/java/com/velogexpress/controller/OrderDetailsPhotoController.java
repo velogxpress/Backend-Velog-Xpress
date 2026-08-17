@@ -1,5 +1,8 @@
 package com.velogexpress.controller;
 
+import org.springframework.cache.annotation.Cacheable;
+import org.springframework.cache.annotation.CacheEvict;
+
 import com.velogexpress.model.OrderDetailsPhotoModel;
 import com.velogexpress.service.OrderDetailsPhotoService;
 import lombok.RequiredArgsConstructor;
@@ -17,6 +20,7 @@ import java.util.List;
 public class OrderDetailsPhotoController {
     private final OrderDetailsPhotoService orderDetailsPhotoService;
 
+    @CacheEvict(cacheNames = "orderDetailsPhoto", allEntries = true)
     @PostMapping(value = "/{orderDetailsId}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<OrderDetailsPhotoModel> addPhoto(
             @PathVariable Long orderDetailsId,
@@ -26,11 +30,13 @@ public class OrderDetailsPhotoController {
         return saved != null ? ResponseEntity.status(HttpStatus.CREATED).body(saved) : ResponseEntity.notFound().build();
     }
 
+    @Cacheable(cacheNames = "orderDetailsPhoto")
     @GetMapping("/{orderDetailsId}")
     public ResponseEntity<List<OrderDetailsPhotoModel>> getPhotos(@PathVariable Long orderDetailsId) {
         return ResponseEntity.ok(orderDetailsPhotoService.getPhotos(orderDetailsId));
     }
 
+    @CacheEvict(cacheNames = "orderDetailsPhoto", allEntries = true)
     @DeleteMapping("/{id}")
     public ResponseEntity<String> deletePhoto(@PathVariable Long id) {
         orderDetailsPhotoService.deletePhoto(id);

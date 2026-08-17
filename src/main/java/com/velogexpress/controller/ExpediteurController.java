@@ -1,5 +1,7 @@
 package com.velogexpress.controller;
 
+import org.springframework.cache.annotation.Cacheable;
+
 import com.velogexpress.model.OrderDetailsModel;
 import com.velogexpress.service.OrderDetailsService;
 import lombok.AllArgsConstructor;
@@ -15,6 +17,7 @@ import java.util.List;
 public class ExpediteurController {
     private OrderDetailsService orderDetailsService;
 
+    @Cacheable(cacheNames = "expediteur")
     @GetMapping("{phone}")
     public ResponseEntity getExpediteur(@PathVariable("phone") String phone){
         OrderDetailsModel orderDetailsModel=orderDetailsService.searchExpediteur(phone);

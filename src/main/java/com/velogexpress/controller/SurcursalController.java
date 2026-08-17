@@ -1,5 +1,8 @@
 package com.velogexpress.controller;
 
+import org.springframework.cache.annotation.Cacheable;
+import org.springframework.cache.annotation.CacheEvict;
+
 import com.velogexpress.model.SurcursalModel;
 import com.velogexpress.service.SurcursalService;
 import lombok.AllArgsConstructor;
@@ -20,6 +23,7 @@ public class SurcursalController {
     private final SurcursalService surcursalService;
 
     // ✅ Create Surcursal
+    @CacheEvict(cacheNames = "surcursal", allEntries = true)
     @PostMapping
     public ResponseEntity<SurcursalModel> createSurcursal(@Valid @RequestBody SurcursalModel surcursalModel) {
         SurcursalModel saved = surcursalService.createSurcursal(surcursalModel);
@@ -27,6 +31,7 @@ public class SurcursalController {
     }
 
     // ✅ Get all Surcursals (with pagination)
+    @Cacheable(cacheNames = "surcursal")
     @GetMapping
     public ResponseEntity<Page<SurcursalModel>> getAllSurcursal(
             @RequestParam(defaultValue = "0") int page,
@@ -37,6 +42,7 @@ public class SurcursalController {
     }
 
     // ✅ Get Surcursal by Name
+    @Cacheable(cacheNames = "surcursal")
     @GetMapping("/{name}")
     public ResponseEntity<SurcursalModel> getSurcursalByName(@PathVariable String name) {
         SurcursalModel model = surcursalService.getSurcursalByName(name);
@@ -45,6 +51,7 @@ public class SurcursalController {
     }
 
     // ✅ Search Surcursals (name, phone, city) with pagination
+    @Cacheable(cacheNames = "surcursal")
     @GetMapping("/search")
     public ResponseEntity<Page<SurcursalModel>> searchSurcursal(
             @RequestParam String query,
@@ -56,6 +63,7 @@ public class SurcursalController {
     }
 
     // ✅ Get Surcursals by Ville (city) with pagination
+    @Cacheable(cacheNames = "surcursal")
     @GetMapping("/ville/{ville}")
     public ResponseEntity<Page<SurcursalModel>> getSurcursalByVille(
             @PathVariable String ville,
@@ -67,6 +75,7 @@ public class SurcursalController {
     }
 
     // ✅ Update Surcursal
+    @CacheEvict(cacheNames = "surcursal", allEntries = true)
     @PutMapping("/{name}")
     public ResponseEntity<SurcursalModel> updateSurcursal(
             @PathVariable String name,
@@ -78,6 +87,7 @@ public class SurcursalController {
     }
 
     // ✅ Delete Surcursal
+    @CacheEvict(cacheNames = "surcursal", allEntries = true)
     @DeleteMapping("/{name}")
     public ResponseEntity<Void> deleteSurcursal(@PathVariable String name) {
         surcursalService.deleteSurcursal(name);
@@ -85,6 +95,7 @@ public class SurcursalController {
     }
 
     //Build get All Surcursal
+    @Cacheable(cacheNames = "surcursal")
     @GetMapping("/surcursalsearch/{name}")
     public ResponseEntity<Page> getSurcursal(@PathVariable("name") String name,
                                              @RequestParam(defaultValue = "0") int page,

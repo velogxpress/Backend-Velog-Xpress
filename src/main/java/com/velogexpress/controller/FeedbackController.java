@@ -1,5 +1,8 @@
 package com.velogexpress.controller;
 
+import org.springframework.cache.annotation.Cacheable;
+import org.springframework.cache.annotation.CacheEvict;
+
 import com.velogexpress.model.FeedbackModel;
 import com.velogexpress.service.FeedbackService;
 import lombok.AllArgsConstructor;
@@ -21,6 +24,7 @@ public class FeedbackController {
     private final FeedbackService feedbackService;
 
     // ✅ Create new feedback
+    @CacheEvict(cacheNames = "feedback", allEntries = true)
     @PostMapping
     public ResponseEntity<FeedbackModel> createFeedback(@RequestBody FeedbackModel feedbackModel) {
         FeedbackModel feedback = feedbackService.createFeedback(feedbackModel);
@@ -28,6 +32,7 @@ public class FeedbackController {
     }
 
     // ✅ Get all feedback (paginated)
+    @Cacheable(cacheNames = "feedback")
     @GetMapping
     public ResponseEntity<Page<FeedbackModel>> getAllFeedback(Pageable pageable) {
         Page<FeedbackModel> feedbackList = feedbackService.getAllFeedback(pageable);
@@ -35,6 +40,7 @@ public class FeedbackController {
     }
 
     // ✅ Get feedback by user email
+    @Cacheable(cacheNames = "feedback")
     @GetMapping("/user/{email}")
     public ResponseEntity<Page<FeedbackModel>> getFeedbackByUser(
             @PathVariable("email") String email,
@@ -46,6 +52,7 @@ public class FeedbackController {
     }
 
     // ✅ Update feedback (mark as read)
+    @CacheEvict(cacheNames = "feedback", allEntries = true)
     @PutMapping("/{id}")
     public ResponseEntity<FeedbackModel> updateFeedback(@PathVariable("id") Long id) {
         FeedbackModel model = feedbackService.updateFeedback(id);
@@ -56,6 +63,7 @@ public class FeedbackController {
     }
 
     // ✅ Get all read feedback (paginated)
+    @Cacheable(cacheNames = "feedback")
     @GetMapping("/read")
     public ResponseEntity<Page<FeedbackModel>> getReadFeedback(
             @RequestParam(defaultValue = "0") int page,
@@ -66,6 +74,7 @@ public class FeedbackController {
     }
 
     // ✅ Get all unread feedback (paginated)
+    @Cacheable(cacheNames = "feedback")
     @GetMapping("/unread")
     public ResponseEntity<Page<FeedbackModel>> getUnreadFeedback(
             @RequestParam(defaultValue = "0") int page,
@@ -76,12 +85,14 @@ public class FeedbackController {
     }
 
     // ✅ Count unread feedback
+    @Cacheable(cacheNames = "feedback")
     @GetMapping("/count")
     public ResponseEntity<Long> countUnreadFeedback() {
         return ResponseEntity.ok(feedbackService.countFeedback());
     }
 
     // ✅ Send reply via email (use query params or body, not path vars)
+    @CacheEvict(cacheNames = "feedback", allEntries = true)
     @PostMapping("/reply")
     public ResponseEntity<String> replyFeedback(
             @RequestParam String recipient,
@@ -92,6 +103,7 @@ public class FeedbackController {
         return ResponseEntity.ok("Email envoyé avec succès.");
     }
 
+    @Cacheable(cacheNames = "feedback")
     @GetMapping("/feedbackList/{description}")
     public ResponseEntity<Page> getFeedbackList(@PathVariable("description") String description,
                                                 @RequestParam(defaultValue = "0") int page,

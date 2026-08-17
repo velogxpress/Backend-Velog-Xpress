@@ -1,5 +1,8 @@
 package com.velogexpress.controller;
 
+import org.springframework.cache.annotation.Cacheable;
+import org.springframework.cache.annotation.CacheEvict;
+
 import com.velogexpress.model.MainaddressModel;
 import com.velogexpress.service.MainaddressService;
 import lombok.RequiredArgsConstructor;
@@ -18,6 +21,7 @@ public class MainaddressController {
     private final MainaddressService mainaddressService;
 
     // Create a new main address
+    @CacheEvict(cacheNames = "mainaddress", allEntries = true)
     @PostMapping
     public ResponseEntity<MainaddressModel> createAddress(@RequestBody MainaddressModel model) {
         MainaddressModel created = mainaddressService.createAddress(model);
@@ -25,6 +29,7 @@ public class MainaddressController {
     }
 
     // Get all addresses with pagination
+    @Cacheable(cacheNames = "mainaddress")
     @GetMapping
     public ResponseEntity<Page<MainaddressModel>> getAddresses(Pageable pageable) {
         Page<MainaddressModel> addresses = mainaddressService.getAddress(pageable);
@@ -32,6 +37,7 @@ public class MainaddressController {
     }
 
     // Get an address by ID
+    @Cacheable(cacheNames = "mainaddress")
     @GetMapping("/{id}")
     public ResponseEntity<MainaddressModel> getAddressById(@PathVariable Long id) {
         MainaddressModel model = mainaddressService.getAddressById(id);
@@ -39,6 +45,7 @@ public class MainaddressController {
     }
 
     // Update an address by ID
+    @CacheEvict(cacheNames = "mainaddress", allEntries = true)
     @PutMapping("/{id}")
     public ResponseEntity<MainaddressModel> updateAddress(
             @PathVariable Long id,

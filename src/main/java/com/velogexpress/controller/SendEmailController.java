@@ -1,5 +1,7 @@
 package com.velogexpress.controller;
 
+import org.springframework.cache.annotation.CacheEvict;
+
 import com.velogexpress.model.ClientregisterModel;
 import com.velogexpress.service.SendEmail;
 import lombok.AllArgsConstructor;
@@ -14,6 +16,7 @@ public class SendEmailController {
     SendEmail sendEmail;
 
     // Send to specific client
+    @CacheEvict(cacheNames = "sendEmail", allEntries = true)
     @PostMapping("/send")
     public ResponseEntity<String> sendEmail(@RequestParam String to, @RequestParam String subject, @RequestParam String body) {
         String envoyer= sendEmail.sendEmail(to, subject, body);
@@ -21,6 +24,7 @@ public class SendEmailController {
     }
 
     // Send to all client
+    @CacheEvict(cacheNames = "sendEmail", allEntries = true)
     @PostMapping("/sending")
     public ResponseEntity<String> sendEmail(@RequestParam String subject, @RequestParam String body) {
         String envoyer= sendEmail.sendEmail(subject, body);

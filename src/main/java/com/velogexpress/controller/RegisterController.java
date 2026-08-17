@@ -1,5 +1,8 @@
 package com.velogexpress.controller;
 
+import org.springframework.cache.annotation.Cacheable;
+import org.springframework.cache.annotation.CacheEvict;
+
 import com.velogexpress.model.ClientregisterModel;
 import com.velogexpress.model.OrderDetailsModel;
 import com.velogexpress.model.RegisterModel;
@@ -18,6 +21,7 @@ public class RegisterController {
     private final OrderDetailsService orderDetailsService;
 
     // Create Client User
+    @CacheEvict(cacheNames = "register", allEntries = true)
     @PostMapping("/create")
     public ResponseEntity<ClientregisterModel> createClientUser(@RequestBody ClientregisterModel clientregisterModel) {
         ClientregisterModel savedModel = clientregisterService.createUser(clientregisterModel);
@@ -25,24 +29,28 @@ public class RegisterController {
     }
     // Get Clientregister by Usercode
     // Get Clientregister by Usercode
+    @Cacheable(cacheNames = "register")
     @GetMapping("/client")
     public ResponseEntity<RegisterModel> getRegisterByUsercode(@RequestParam String code) {
         RegisterModel clientregister = clientregisterService.getRegisterByUsercode(code);
         return ResponseEntity.ok(clientregister);
     }
 
+    @Cacheable(cacheNames = "register")
     @GetMapping("/existuser/{email}")
     public ResponseEntity<String> getXeExistsmail(@PathVariable("email") String email) {
         String valor=clientregisterService.findExistEmail(email);
         return ResponseEntity.ok(valor);
     }
 
+    @Cacheable(cacheNames = "register")
     @GetMapping("/countclient")
     public ResponseEntity<Long> getCountClient() {
         Long client=clientregisterService.countClient();
         return ResponseEntity.ok(client);
     }
 
+    @Cacheable(cacheNames = "register")
     @GetMapping("/trackcolis")
     public ResponseEntity<OrderDetailsModel> trackColis(@RequestParam() String search) {
         return ResponseEntity.ok(orderDetailsService.trackColis(search));

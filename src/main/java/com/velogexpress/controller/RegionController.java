@@ -1,5 +1,8 @@
 package com.velogexpress.controller;
 
+import org.springframework.cache.annotation.Cacheable;
+import org.springframework.cache.annotation.CacheEvict;
+
 import com.velogexpress.model.RegionModel;
 import com.velogexpress.service.RegionService;
 import lombok.AllArgsConstructor;
@@ -22,6 +25,7 @@ public class RegionController {
     private final RegionService regionService;
 
     // Create a new Region
+    @CacheEvict(cacheNames = "region", allEntries = true)
     @PostMapping
     public ResponseEntity<RegionModel> createRegion(@Valid @RequestBody RegionModel regionModel) {
         log.info("Creating region: {}", regionModel.getDescription());
@@ -30,6 +34,7 @@ public class RegionController {
     }
 
     // Get all Regions with pagination
+    @Cacheable(cacheNames = "region")
     @GetMapping
     public ResponseEntity<Page<RegionModel>> getAllRegions(
             @RequestParam(defaultValue = "0") int page,
@@ -41,6 +46,7 @@ public class RegionController {
     }
 
     // Get Region by description (using query parameter)
+    @Cacheable(cacheNames = "region")
     @GetMapping("/search")
     public ResponseEntity<RegionModel> getRegionByDescription(@RequestParam String description) {
         log.debug("Fetching region by description: {}", description);
@@ -49,6 +55,7 @@ public class RegionController {
     }
 
     // Get Region by id (using query parameter)
+    @Cacheable(cacheNames = "region")
     @GetMapping("/id/{id}")
     public ResponseEntity<RegionModel> getRegionById(@PathVariable("id") Long id) {
         log.debug("Fetching region by id: {}", id);
@@ -57,6 +64,7 @@ public class RegionController {
     }
 
     // Update a Region
+    @CacheEvict(cacheNames = "region", allEntries = true)
     @PutMapping("{id}")
     public ResponseEntity<RegionModel> updateRegion(
             @PathVariable("id") Long regionId,
@@ -68,6 +76,7 @@ public class RegionController {
     }
 
     // Delete a Region
+    @CacheEvict(cacheNames = "region", allEntries = true)
     @DeleteMapping("{id}")
     public ResponseEntity<Void> deleteRegion(@PathVariable("id") Long regionId) {
         log.warn("Deleting region with ID: {}", regionId);
@@ -76,6 +85,7 @@ public class RegionController {
     }
 
     // Get all Regions with pagination
+    @Cacheable(cacheNames = "region")
     @GetMapping("/limitedregion")
     public ResponseEntity<Page<RegionModel>> findAllRegions(
             @RequestParam(defaultValue = "0") int page,

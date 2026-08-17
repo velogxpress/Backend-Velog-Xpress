@@ -1,5 +1,8 @@
 package com.velogexpress.controller;
 
+import org.springframework.cache.annotation.Cacheable;
+import org.springframework.cache.annotation.CacheEvict;
+
 import com.velogexpress.model.AmnistyModel;
 import com.velogexpress.service.AmnistyService;
 import com.velogexpress.service.PdfService;
@@ -22,6 +25,7 @@ public class AmnistyController {
     private final AmnistyService amnistyService;
     private final PdfService pdfService;
 
+    @CacheEvict(cacheNames = "amnisty", allEntries = true)
     @PostMapping(
             value = "/save-colis",
             consumes = MediaType.MULTIPART_FORM_DATA_VALUE
@@ -35,16 +39,19 @@ public class AmnistyController {
         return ResponseEntity.status(HttpStatus.CREATED).body(saved);
     }
 
+    @Cacheable(cacheNames = "amnisty")
     @GetMapping
     public ResponseEntity<List<AmnistyModel>> getAllAmnisty() {
         return ResponseEntity.ok(amnistyService.getAllAmnisty());
     }
 
+    @Cacheable(cacheNames = "amnisty")
     @GetMapping("/searchamnisty")
     public ResponseEntity<List<AmnistyModel>> searchAmnisty( @RequestParam String search) {
         return ResponseEntity.ok(amnistyService.searchAmnisty(search));
     }
 
+    @CacheEvict(cacheNames = "amnisty", allEntries = true)
     @PutMapping("/updateamnisty/{upc}")
     public ResponseEntity<AmnistyModel> updateAmnisty(@PathVariable String upc,@RequestBody AmnistyModel amnistyModel) {
         AmnistyModel model=amnistyService.updateAmnisty(upc, amnistyModel);
