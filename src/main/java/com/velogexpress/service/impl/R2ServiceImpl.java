@@ -46,7 +46,7 @@ public class R2ServiceImpl implements R2Service {
                 .credentialsProvider(StaticCredentialsProvider.create(
                         AwsBasicCredentials.create(accessKeyId, secretAccessKey)))
                 .serviceConfiguration(S3Configuration.builder()
-                        .pathStyleAccess(true)
+                        .pathStyleAccessEnabled(true)
                         .build())
                 .build();
     }
