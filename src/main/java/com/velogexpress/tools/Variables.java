@@ -68,5 +68,5 @@ public class Variables {
     public static List<OrderDetails> allDetails;
     public static Facture getFacture;
     public static Agentsurcursal getAgent;
-    public static String logoPath="uploads\\logo\\velogs.png";
+    public static String logoPath="logo/velogs.png";
 }

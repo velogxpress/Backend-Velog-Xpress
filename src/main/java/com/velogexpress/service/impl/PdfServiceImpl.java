@@ -277,7 +277,7 @@ public class PdfServiceImpl implements PdfService {
             PdfFont fontPlain = PdfFontFactory.createFont(StandardFonts.TIMES_ROMAN);
 
             ClassPathResource resource = new ClassPathResource(Variables.logoPath);
-            ImageData imageData = ImageDataFactory.create(resource.getPath());
+            ImageData imageData = ImageDataFactory.create(resource.getInputStream().readAllBytes());
             Image image = new Image(imageData).scaleToFit(100, 50).setHorizontalAlignment(HorizontalAlignment.CENTER);
             document.add(image);
             Mainaddress address = new Mainaddress();
@@ -534,7 +534,7 @@ public class PdfServiceImpl implements PdfService {
             }
 
             ClassPathResource resource = new ClassPathResource(Variables.logoPath);
-            ImageData imageData = ImageDataFactory.create(resource.getPath());
+            ImageData imageData = ImageDataFactory.create(resource.getInputStream().readAllBytes());
             Image image = new Image(imageData).scaleToFit(100, 50).setHorizontalAlignment(HorizontalAlignment.CENTER);
             document.add(image);
 
@@ -632,7 +632,7 @@ public class PdfServiceImpl implements PdfService {
             header.setBorder(Border.NO_BORDER);
 
             ClassPathResource resource = new ClassPathResource(Variables.logoPath);
-            ImageData imageData = ImageDataFactory.create(resource.getPath());
+            ImageData imageData = ImageDataFactory.create(resource.getInputStream().readAllBytes());
             Image image = new Image(imageData)
                     .setWidth(90)
                     .setHeight(55)
@@ -896,7 +896,7 @@ public class PdfServiceImpl implements PdfService {
 
             // LOGO
             ClassPathResource resource = new ClassPathResource(Variables.logoPath);
-            ImageData imageData = ImageDataFactory.create(resource.getPath());
+            ImageData imageData = ImageDataFactory.create(resource.getInputStream().readAllBytes());
             Image image = new Image(imageData)
                     .setWidth(120)
                     .setAutoScaleHeight(true);
@@ -1116,7 +1116,7 @@ public class PdfServiceImpl implements PdfService {
 
             // LOGO
             ClassPathResource resource = new ClassPathResource(Variables.logoPath);
-            ImageData imageData = ImageDataFactory.create(resource.getPath());
+            ImageData imageData = ImageDataFactory.create(resource.getInputStream().readAllBytes());
             Image image = new Image(imageData)
                     .setWidth(120)
                     .setAutoScaleHeight(true);
@@ -1452,7 +1452,7 @@ public class PdfServiceImpl implements PdfService {
             doc.add(frame);
             doc.add(new Paragraph("").setMarginBottom(15));
             ClassPathResource resource = new ClassPathResource(Variables.logoPath);
-            ImageData imageData = ImageDataFactory.create(resource.getPath());
+            ImageData imageData = ImageDataFactory.create(resource.getInputStream().readAllBytes());
             Image image = null;
             if(!orderDetails.getType().equals("Directe")) {
                 image = new Image(imageData).scaleToFit(150, 80).setHorizontalAlignment(HorizontalAlignment.CENTER);
@@ -1564,7 +1564,7 @@ public class PdfServiceImpl implements PdfService {
             doc.add(frame);
             doc.add(new Paragraph("").setMarginBottom(25));
             ClassPathResource resource = new ClassPathResource(Variables.logoPath);
-            ImageData imageData = ImageDataFactory.create(resource.getPath());
+            ImageData imageData = ImageDataFactory.create(resource.getInputStream().readAllBytes());
             Image image = new Image(imageData).scaleToFit(150, 100).setHorizontalAlignment(HorizontalAlignment.CENTER);
             doc.add(image);
 
@@ -1622,7 +1622,7 @@ public class PdfServiceImpl implements PdfService {
 
             // --- LOGO CENTRÉ PARFAITEMENT ---
             ClassPathResource resource = new ClassPathResource(Variables.logoPath);
-            ImageData imageData = ImageDataFactory.create(resource.getPath());
+            ImageData imageData = ImageDataFactory.create(resource.getInputStream().readAllBytes());
             Image logo = new Image(imageData);
 
             float logoWidth = 220;
@@ -1981,7 +1981,7 @@ public class PdfServiceImpl implements PdfService {
             header.setBorder(Border.NO_BORDER);
 
             ClassPathResource resource = new ClassPathResource(Variables.logoPath);
-            ImageData imageData = ImageDataFactory.create(resource.getPath());
+            ImageData imageData = ImageDataFactory.create(resource.getInputStream().readAllBytes());
             Image image = new Image(imageData)
                     .setWidth(90)
                     .setHeight(55)
@@ -2341,7 +2341,7 @@ public class PdfServiceImpl implements PdfService {
             header.setBorder(Border.NO_BORDER);
 
             ClassPathResource resource = new ClassPathResource(Variables.logoPath);
-            ImageData imageData = ImageDataFactory.create(resource.getPath());
+            ImageData imageData = ImageDataFactory.create(resource.getInputStream().readAllBytes());
             Image image = new Image(imageData)
                     .setWidth(90)
                     .setHeight(55)
@@ -2699,7 +2699,7 @@ public class PdfServiceImpl implements PdfService {
             header.setBorder(Border.NO_BORDER);
 
             ClassPathResource resource = new ClassPathResource(Variables.logoPath);
-            ImageData imageData = ImageDataFactory.create(resource.getPath());
+            ImageData imageData = ImageDataFactory.create(resource.getInputStream().readAllBytes());
             Image image = new Image(imageData)
                     .setWidth(90)
                     .setHeight(55)
@@ -3044,7 +3044,7 @@ public class PdfServiceImpl implements PdfService {
             }
 
             ClassPathResource resource = new ClassPathResource(Variables.logoPath);
-            ImageData imageData = ImageDataFactory.create(resource.getPath());
+            ImageData imageData = ImageDataFactory.create(resource.getInputStream().readAllBytes());
             Image image = new Image(imageData).scaleToFit(100, 50).setHorizontalAlignment(HorizontalAlignment.CENTER);
             document.add(image);
 
