@@ -8,6 +8,7 @@ import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.mail.SimpleMailMessage;
@@ -24,8 +25,15 @@ import java.util.stream.Collectors;
 
 @Service
 public class EmailServiceImpl implements EmailService {
-    private static final String PUBLIC_PRODUCTS_URL =
-            "https://www.velogxpress.com/api/uploads/products/";
+    @Value("${r2.public-url}")
+    private String r2PublicUrl;
+
+    private String publicProductsUrl() {
+        String base = r2PublicUrl.endsWith("/")
+                ? r2PublicUrl.substring(0, r2PublicUrl.length() - 1)
+                : r2PublicUrl;
+        return base + "/products/";
+    }
 //    @Autowired private JavaMailSender javaMailSender;
 //    @Value("${spring.mail.username}") private String sender;
 
@@ -196,7 +204,7 @@ public class EmailServiceImpl implements EmailService {
             String attachmentsHtml = files.stream()
                     .map(link -> {
                         String lowerLink = link.toLowerCase();
-                        String downloadUrl = PUBLIC_PRODUCTS_URL
+                        String downloadUrl = publicProductsUrl()
                                 + UriUtils.encodePathSegment(link, StandardCharsets.UTF_8);
                         String safeDownloadUrl = HtmlUtils.htmlEscape(downloadUrl);
 

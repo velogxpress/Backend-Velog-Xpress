@@ -7,6 +7,7 @@ import com.velogexpress.mapper.OrderDetailsMapper;
 import com.velogexpress.model.AmnistyModel;
 import com.velogexpress.repository.AmnistyRepository;
 import com.velogexpress.service.AmnistyService;
+import com.velogexpress.service.R2Service;
 import com.velogexpress.tools.SKU;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
@@ -30,6 +31,7 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class AmnistyServiceImpl implements AmnistyService {
     private final AmnistyRepository amnistyRepository;
+    private final R2Service r2Service;
     @Value("${file.upload-dir}") private String uploadDir;
     @Override
     public AmnistyModel createAmnesty(MultipartFile file, AmnistyModel amnistyModel) {
@@ -60,12 +62,6 @@ public class AmnistyServiceImpl implements AmnistyService {
             throw new RuntimeException("Erreur transfert fichier", e);
         }
 
-        // 5️⃣ Dossier final
-        File uploadPath = new File(uploadDir + "/products/");
-        if (!uploadPath.exists()) {
-            uploadPath.mkdirs();
-        }
-
         // 6️⃣ Nouveau nom FINAL
         String finalFileName =
                 System.currentTimeMillis() + "_" + UUID.randomUUID() + extension;
@@ -73,8 +69,9 @@ public class AmnistyServiceImpl implements AmnistyService {
         try {
             BufferedImage bufferedImage = ImageIO.read(tempFile);
 
-            File outputFile = new File(uploadPath, finalFileName);
-            ImageIO.write(bufferedImage, extension.replace(".", ""), outputFile);
+            java.io.ByteArrayOutputStream imageBytes = new java.io.ByteArrayOutputStream();
+            ImageIO.write(bufferedImage, extension.replace(".", ""), imageBytes);
+            r2Service.upload(imageBytes.toByteArray(), "products/" + finalFileName, file.getContentType());
 
             // 7️⃣ Entity Image
             amnisty.setPicture(finalFileName);

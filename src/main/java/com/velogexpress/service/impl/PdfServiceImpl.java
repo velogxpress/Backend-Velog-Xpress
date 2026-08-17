@@ -30,6 +30,7 @@ import com.itextpdf.layout.properties.UnitValue;
 import com.velogexpress.entity.*;
 import com.velogexpress.repository.*;
 import com.velogexpress.service.PdfService;
+import com.velogexpress.service.R2Service;
 import com.velogexpress.tools.DateTime;
 import com.velogexpress.tools.DecimalFormat;
 import com.velogexpress.tools.Variables;
@@ -62,6 +63,7 @@ public class PdfServiceImpl implements PdfService {
             DateTimeFormatter.ofPattern("dd/MM/yyyy hh:mm a", Locale.FRENCH);
 
     @Value("${file.upload-dir}") private String uploadDir;
+    private final R2Service r2Service;
 
 
     // ==================== QR CODE GENERATOR ===============================
@@ -1075,9 +1077,10 @@ public class PdfServiceImpl implements PdfService {
     @Override
     public String movefactureDownloadA4(String facturecode) {
         try {
-            String fullPath=uploadDir+"/products/"+facturecode+".pdf";
+            String objectKey="products/"+facturecode+".pdf";
             // ✅ PAGE SETUP (LETTER 8.5 x 11)
-            PdfWriter writer = new PdfWriter(fullPath);
+            ByteArrayOutputStream out = new ByteArrayOutputStream();
+            PdfWriter writer = new PdfWriter(out);
             PdfDocument pdf = new PdfDocument(writer);
             Document doc = new Document(pdf, PageSize.LETTER);
 
@@ -1283,7 +1286,8 @@ public class PdfServiceImpl implements PdfService {
             doc.add(new Paragraph("\n\n"));
 
             doc.close();
-            return fullPath;
+            r2Service.upload(out.toByteArray(), objectKey, "application/pdf");
+            return r2Service.publicUrl(objectKey);
 
         } catch (Exception e) {
             throw new RuntimeException("Error creating PDF", e);
@@ -1919,12 +1923,13 @@ public class PdfServiceImpl implements PdfService {
     @Override
     public String create80PdfMove(OrderDetails orderDetails,String path) {
         try{
-            String fullPath=path+orderDetails.getRec_name()+"_"+orderDetails.getShip().getShiporder()+".pdf";
+            String objectKey="products/"+orderDetails.getRec_name()+"_"+orderDetails.getShip().getShiporder()+".pdf";
             float MARGIN = 36f;
             float CONTENT_WIDTH = PageSize.LETTER.getWidth() - (MARGIN * 2);
 
 
-            PdfWriter writer = new PdfWriter(fullPath);
+            ByteArrayOutputStream out = new ByteArrayOutputStream();
+            PdfWriter writer = new PdfWriter(out);
             PdfDocument pdf = new PdfDocument(writer);
 
             Document doc = new Document(pdf, PageSize.LETTER);
@@ -2268,7 +2273,8 @@ public class PdfServiceImpl implements PdfService {
 
             doc.close();
 
-            return fullPath;
+            r2Service.upload(out.toByteArray(), objectKey, "application/pdf");
+            return r2Service.publicUrl(objectKey);
         } catch (Exception e) {
             throw new RuntimeException("Error creating PDF", e);
         }
@@ -2277,12 +2283,13 @@ public class PdfServiceImpl implements PdfService {
     @Override
     public String create80PdfMoves(OrderDetails orderDetails,String path) {
         try{
-            String fullPath=path+orderDetails.getRec_phone()+"_"+orderDetails.getShip().getShiporder()+".pdf";
+            String objectKey="products/"+orderDetails.getRec_phone()+"_"+orderDetails.getShip().getShiporder()+".pdf";
             float MARGIN = 36f;
             float CONTENT_WIDTH = PageSize.LETTER.getWidth() - (MARGIN * 2);
 
 
-            PdfWriter writer = new PdfWriter(fullPath);
+            ByteArrayOutputStream out = new ByteArrayOutputStream();
+            PdfWriter writer = new PdfWriter(out);
             PdfDocument pdf = new PdfDocument(writer);
 
             Document doc = new Document(pdf, PageSize.LETTER);
@@ -2623,7 +2630,8 @@ public class PdfServiceImpl implements PdfService {
 
             doc.close();
 
-            return fullPath;
+            r2Service.upload(out.toByteArray(), objectKey, "application/pdf");
+            return r2Service.publicUrl(objectKey);
         } catch (Exception e) {
             throw new RuntimeException("Error creating PDF", e);
         }

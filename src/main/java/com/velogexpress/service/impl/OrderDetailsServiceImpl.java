@@ -13,6 +13,7 @@ import com.velogexpress.repository.ClientRegisterRepository;
 import com.velogexpress.repository.StorageDetailsRepository;
 import com.velogexpress.repository.StoreRepository;
 import com.velogexpress.service.*;
+import com.velogexpress.service.R2Service;
 import com.velogexpress.tools.DateTime;
 import com.velogexpress.tools.SKU;
 import lombok.AllArgsConstructor;
@@ -49,6 +50,7 @@ public class OrderDetailsServiceImpl implements OrderDetailsService {
     private final StoreRepository storeRepository;
     private final SurcursalService surcursalService;
     private final PdfService pdfService;
+    private final R2Service r2Service;
     private final JdbcTemplate jdbcTemplate;
     @Autowired
     private NotificationService notificationService;
@@ -130,12 +132,6 @@ public class OrderDetailsServiceImpl implements OrderDetailsService {
             throw new RuntimeException("Erreur transfert fichier", e);
         }
 
-        // 5️⃣ Dossier final
-        File uploadPath = new File(uploadDir + "/products/");
-        if (!uploadPath.exists()) {
-            uploadPath.mkdirs();
-        }
-
         // 6️⃣ Nouveau nom FINAL
         String finalFileName =
                 System.currentTimeMillis() + "_" + UUID.randomUUID() + extension;
@@ -143,8 +139,9 @@ public class OrderDetailsServiceImpl implements OrderDetailsService {
         try {
             BufferedImage bufferedImage = ImageIO.read(tempFile);
 
-            File outputFile = new File(uploadPath, finalFileName);
-            ImageIO.write(bufferedImage, extension.replace(".", ""), outputFile);
+            java.io.ByteArrayOutputStream imageBytes = new java.io.ByteArrayOutputStream();
+            ImageIO.write(bufferedImage, extension.replace(".", ""), imageBytes);
+            r2Service.upload(imageBytes.toByteArray(), "products/" + finalFileName, file.getContentType());
 
 
             // 7️⃣ Entity Image

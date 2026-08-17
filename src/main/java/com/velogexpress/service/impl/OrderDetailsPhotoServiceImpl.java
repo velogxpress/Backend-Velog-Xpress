@@ -4,6 +4,7 @@ import com.velogexpress.entity.OrderDetails;
 import com.velogexpress.model.OrderDetailsPhotoModel;
 import com.velogexpress.repository.OrderDetailsRepository;
 import com.velogexpress.service.OrderDetailsPhotoService;
+import com.velogexpress.service.R2Service;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -27,6 +28,7 @@ import java.util.UUID;
 public class OrderDetailsPhotoServiceImpl implements OrderDetailsPhotoService {
     private final OrderDetailsRepository orderDetailsRepository;
     private final JdbcTemplate jdbcTemplate;
+    private final R2Service r2Service;
 
     @Value("${file.upload-dir}") private String uploadDir;
 
@@ -47,16 +49,10 @@ public class OrderDetailsPhotoServiceImpl implements OrderDetailsPhotoService {
             extension = cleanOriginalName.substring(cleanOriginalName.lastIndexOf("."));
         }
 
-        File uploadPath = new File(uploadDir + "/products/");
-        if (!uploadPath.exists()) {
-            uploadPath.mkdirs();
-        }
-
         String finalFileName = System.currentTimeMillis() + "_" + UUID.randomUUID() + extension;
-        File outputFile = new File(uploadPath, finalFileName);
 
         try {
-            file.transferTo(outputFile);
+            r2Service.upload(file.getBytes(), "products/" + finalFileName, file.getContentType());
         } catch (IOException e) {
             throw new RuntimeException("Erreur sauvegarde photo galerie", e);
         }
