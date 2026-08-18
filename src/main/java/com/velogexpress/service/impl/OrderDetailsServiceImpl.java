@@ -106,10 +106,15 @@ public class OrderDetailsServiceImpl implements OrderDetailsService {
     public OrderDetailsModel createDetails(MultipartFile file, OrderDetailsModel model) {
         OrderDetails details = OrderDetailsMapper.mapToOrderDetails(model);
         // 1️⃣ Nom original nettoyé
-        String cleanOriginalName = Paths
-                .get(Objects.requireNonNull(file.getOriginalFilename()))
-                .getFileName()
-                .toString();
+        // Extract the filename with plain String ops, not java.nio.file.Path:
+        // Paths.get() has to encode the string using the JVM's platform
+        // charset, which throws InvalidPathException on filenames containing
+        // characters that charset can't represent (e.g. the narrow no-break
+        // spaces macOS puts in default screenshot filenames) if the
+        // container isn't running a UTF-8 locale.
+        String rawFileName = Objects.requireNonNull(file.getOriginalFilename());
+        int lastSeparator = Math.max(rawFileName.lastIndexOf('/'), rawFileName.lastIndexOf('\\'));
+        String cleanOriginalName = lastSeparator >= 0 ? rawFileName.substring(lastSeparator + 1) : rawFileName;
 
         String extension = "";
         if (cleanOriginalName.contains(".")) {
