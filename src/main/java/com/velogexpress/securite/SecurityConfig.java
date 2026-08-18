@@ -83,7 +83,8 @@ public class SecurityConfig {
                                 "/api/calculatrice/**",
                                 "/api/surcursal/**",
                                 "/api/feedback/**",
-                                "/api/recoveries/**"
+                                "/api/recoveries/**",
+                                "/uploads/**"
 
                                 ).permitAll()
                                 .requestMatchers(
